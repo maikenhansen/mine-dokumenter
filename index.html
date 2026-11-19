@@ -1,0 +1,2300 @@
+<!doctype html><html lang="nb"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Mine dokumenter</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400;1,700&family=Caladea:ital,wght@0,400;0,700;1,400;1,700&family=Arimo:ital,wght@0,400;0,700;1,400;1,700&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: mappeliste til venstre, verktøylinje øverst, A4-ark i midten. Arket er alltid hvitt papir. */
+:root{
+  --bg:#e9ecef; --panel:#f8f9fa; --fg:#1d2329; --muted:#5b6570; --line:#d3d9df;
+  --accent:#2f5d7c; --accent-soft:#dfe9f0; --danger:#a33a2c; --ok:#2e6b45;
+  --paper:#ffffff; --ink:#000000;
+  --ui:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --doc:Calibri, Carlito, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15181b; --panel:#1e2226; --fg:#e6e9ec; --muted:#9aa4ad; --line:#343b42;
+  --accent:#8db8d6; --accent-soft:#24323c; --danger:#e3907f; --ok:#86c49c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15181b; --panel:#1e2226; --fg:#e6e9ec; --muted:#9aa4ad; --line:#343b42;
+  --accent:#8db8d6; --accent-soft:#24323c; --danger:#e3907f; --ok:#86c49c; color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:14px;overflow:hidden}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.app{display:grid;grid-template-columns:380px minmax(0,1fr) 480px;grid-template-rows:auto minmax(0,1fr);height:100%}
+.app > .topbar{grid-column:1 / 3;grid-row:1}
+.app > .tools{grid-column:1;grid-row:2}
+.app > .main{grid-column:2;grid-row:2}
+.app > .side{grid-column:3;grid-row:1 / 3}
+.topbar{display:flex;align-items:center;padding:12px 20px;background:var(--panel);border-bottom:1px solid var(--line);min-width:0}
+.topbar .titlein{flex:1 1 auto;width:100%;font-size:22px;font-weight:700}
+/* Verktøypanel til venstre: dokumentvalg og formatering under hverandre */
+@media (min-width:761px){
+  .tools{background:var(--panel);border-right:1px solid var(--line);overflow:auto;min-height:0;display:flex;flex-direction:column;gap:14px;padding:16px 16px 24px}
+  .tools .docbar{flex-direction:column;flex-wrap:nowrap;align-items:stretch;padding:0;border:0;background:none;gap:10px}
+  .tools .docbar label{font-size:14px;flex-direction:column;align-items:stretch;gap:4px}
+  .tools .docbar select{padding:8px 9px;font-size:16px}
+  .tools .status{font-size:14px;min-width:0}
+  .tools .docbar .btn{font-size:16px;padding:9px 12px}
+  .tools .toolbar{flex-direction:column;flex-wrap:nowrap;align-items:stretch;padding:0;border:0;background:none;gap:0}
+  .tools .grp{flex-wrap:wrap;border-right:0;border-top:1px solid var(--line);padding:12px 0;margin:0;gap:6px}
+  .tools .tb{min-width:42px;height:42px;font-size:17px;padding:0 9px}
+  .tools .tb svg{width:20px;height:20px}
+  .tools .toolbar select{height:42px;font-size:16px;flex:1 1 100%}
+  .tools .toolbar select.font{width:auto}
+  .tools .toolbar .lbl{font-size:14px;flex:1 1 100%;padding:0}
+}
+/* Sidepanel */
+.side{background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;
+  padding-right:max(0px, env(safe-area-inset-right,0px))}
+.side-head{padding:18px 16px 12px;display:flex;flex-direction:column;gap:10px}
+.brand{font-weight:700;font-size:24px;letter-spacing:.01em}
+.newdoc{background:var(--accent);color:var(--panel);border:0;border-radius:6px;padding:13px 16px;font-size:18px;font-weight:600;cursor:pointer}
+.side-list{overflow:auto;padding:4px 10px 16px;flex:1;min-height:0}
+.folder{margin-top:10px}
+.folder-head{display:flex;align-items:center;gap:6px;padding:8px 8px;font-size:16px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.folder-head .count{font-weight:400;letter-spacing:0}
+.folder-head .grow{flex:1}
+.iconbtn{background:none;border:0;cursor:pointer;color:var(--muted);padding:2px 5px;border-radius:4px;font-size:13px;line-height:1}
+.iconbtn:hover{background:var(--accent-soft);color:var(--fg)}
+.doclink{display:block;width:100%;text-align:left;background:none;border:0;border-radius:6px;padding:12px 14px;cursor:pointer;line-height:1.35;font-size:20px}
+.doclink:hover{background:var(--accent-soft)}
+.doclink.active{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.doclink .t{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doclink .d{display:block;font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.doclink{position:relative}
+.doclink .ren{position:absolute;right:6px;top:8px;display:none;align-items:center;justify-content:center;width:28px;height:28px;border-radius:4px;color:var(--muted);font-size:16px;line-height:1;background:var(--panel)}
+.doclink:hover .ren,.doclink:focus-visible .ren{display:inline-flex}
+.doclink .ren:hover{background:var(--accent-soft);color:var(--fg)}
+.doclink:hover .t{padding-right:32px}
+.renbox{padding:4px 4px 6px}
+.renin{display:block;font-size:17px;width:100%;box-sizing:border-box;border:1px solid var(--accent);border-radius:5px;padding:5px 7px;background:var(--bg);color:var(--fg)}
+.renhint{display:block;font-size:11px;color:var(--muted);padding:3px 2px 0}
+@media (hover:none){.doclink .ren{display:inline-flex}.doclink .t{padding-right:26px}}
+.empty-folder{font-size:15px;color:var(--muted);padding:2px 8px 4px}
+.addfolder{display:flex;gap:6px;padding:12px 6px 0}
+.addfolder input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:8px 10px;font-size:16px}
+.addfolder button{border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:8px 12px;font-size:16px;cursor:pointer}
+
+/* Hoveddel */
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.docbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);
+  padding-right:max(16px, env(safe-area-inset-right,0px))}
+.menu-toggle{display:none}
+.titlein{flex:1 1 220px;min-width:0;font-size:17px;font-weight:600;border:1px solid transparent;background:none;border-radius:5px;padding:4px 6px}
+.titlein:hover,.titlein:focus{border-color:var(--line);background:var(--bg)}
+.docbar label{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.docbar select{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:4px 6px}
+.status{font-size:12px;color:var(--muted);min-width:90px;font-variant-numeric:tabular-nums}
+.status.err{color:var(--danger)}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:5px 10px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--panel);border-color:var(--accent);font-weight:600}
+.btn.danger{color:var(--danger)}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:6px 16px;border-bottom:1px solid var(--line);background:var(--panel);
+  padding-right:max(16px, env(safe-area-inset-right,0px))}
+.grp{display:flex;align-items:center;gap:2px;padding-right:6px;margin-right:2px;border-right:1px solid var(--line)}
+.grp:last-child{border-right:0}
+.tb{min-width:30px;height:30px;border:1px solid transparent;background:none;border-radius:5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0 6px;font-size:14px}
+.tb:hover{background:var(--accent-soft)}
+.tb.on{background:var(--accent-soft);border-color:var(--accent)}
+.tb:disabled{opacity:.35;cursor:default;background:none}
+.tb svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.toolbar select{height:30px;border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:0 4px}
+.toolbar select.font{width:140px}
+.toolbar .lbl{font-size:12px;color:var(--muted);padding:0 2px 0 4px}
+
+.confirm{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px 16px;background:var(--accent-soft);border-bottom:1px solid var(--line)}
+.panel{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:10px 16px;background:var(--accent-soft);border-bottom:1px solid var(--line)}
+.panel input[type=number]{width:60px;border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:3px 6px}
+
+.scroll{flex:1;overflow:auto;overflow-anchor:none;min-height:0;padding:24px 56px 60px max(16px, env(safe-area-inset-left,0px))}
+@media (max-width:760px){.scroll{padding-right:16px}}
+.sheet{position:relative;--pad:2.54cm;width:210mm;max-width:100%;min-height:297mm;margin:0;background:var(--paper);color:var(--ink);
+  box-shadow:0 1px 3px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.06);padding:2.54cm;box-sizing:border-box}
+.zoomwrap{position:relative;overflow:hidden;margin-left:auto}
+.zoomwrap > .sheet{transform-origin:0 0;max-width:none}
+.zoomctl{position:fixed;right:calc(480px + 64px);bottom:max(20px, env(safe-area-inset-bottom,0px));z-index:15;display:inline-flex;align-items:center;gap:6px;
+  padding:6px 8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.zoomctl[hidden]{display:none}
+.zoomctl .btn{padding:4px 0;width:36px;font-size:18px;line-height:1.2}
+.zoomctl select{border:1px solid var(--line);background:var(--bg);border-radius:5px;padding:5px 6px;font-size:14px}
+.zoomctl .btn:disabled{opacity:.4;cursor:default}
+.placeholder{max-width:520px;margin:12vh auto 0;text-align:center;color:var(--muted);line-height:1.5}
+.placeholder h2{color:var(--fg);font-size:20px;margin:0 0 8px}
+
+/* Dokumentinnhold, felles for skjerm og PDF */
+.doc{font-family:var(--doc);font-size:11pt;line-height:1.38;color:#000;outline:none;min-height:200mm;word-wrap:break-word}
+.doc p{margin:0 0 8pt}
+.doc h1{font-size:16pt;font-weight:700;margin:24pt 0 6pt;line-height:1.2}
+.doc h2{font-size:13pt;font-weight:700;margin:18pt 0 4pt;line-height:1.25}
+.doc h3{font-size:12pt;font-weight:700;margin:14pt 0 4pt;line-height:1.3}
+.doc > :first-child{margin-top:0}
+.doc ul,.doc ol{margin:0 0 8pt;padding-left:22pt}
+.doc ul{list-style:disc}
+.doc li{margin:0 0 2pt}
+.doc table{border-collapse:collapse;width:100%;margin:0 0 10pt}
+.doc table.t-fixed{table-layout:fixed}
+.doc table.t-fixed td,.doc table.t-fixed th{box-sizing:border-box}
+/* Kolonnebredde: markøren viser at streken mellom to kolonner kan dras */
+.doc.colhover, .doc.colhover *{cursor:col-resize!important}
+body.coldrag, body.coldrag *{cursor:col-resize!important;user-select:none!important}
+.doc th,.doc td{border:.75pt solid #000;padding:3pt 6pt;vertical-align:top;text-align:left}
+.doc th{font-weight:700}
+.doc td p,.doc th p{margin:0}
+.doc{position:relative}
+.doc .pagebreak{height:28px;margin:var(--pad) calc(-1 * var(--pad) - 4px);background:var(--bg);
+  box-shadow:inset 0 7px 6px -6px rgba(0,0,0,.22),inset 0 -7px 6px -6px rgba(0,0,0,.22);cursor:default;user-select:none}
+.doc .pagebreak + *{margin-top:0}
+.doc .toc{margin:0 0 14pt;padding:0;cursor:default}
+.doc .toc-title{font-size:18pt;font-weight:700;margin:0 0 8pt}
+.doc .toc-l1,.doc .toc-l2,.doc .toc-l3{display:flex;align-items:baseline}
+.doc .toc-dots{flex:1;min-width:12pt;border-bottom:1px dotted #000;margin:0 4pt;transform:translateY(-3pt)}
+.doc .toc-n{font-variant-numeric:tabular-nums}
+.doc .toc-l1{margin:0 0 3pt;cursor:pointer;font-weight:700}
+.doc .toc-l2{margin:0 0 3pt 14pt;cursor:pointer}
+.doc .toc-l3{margin:0 0 3pt 28pt;cursor:pointer}
+.doc .toc-empty{color:#6b7580;font-style:italic}
+.doc .toc [data-h]:hover{text-decoration:underline}
+
+
+.doc table.t-lines{border-top:.75pt solid #000}
+.doc table.t-lines td,.doc table.t-lines th{border:0;border-bottom:.5pt solid #000}
+.doc table.t-lines thead th{border-bottom:.75pt solid #000}
+.doc table.t-greyhead th{background:#d9d9d9}
+.doc table.t-zebra td,.doc table.t-zebra th{border-color:#999;border-width:.5pt}
+.doc table.t-zebra tbody tr:nth-child(even of :not(.pgspace)) td{background:#f2f2f2}
+.doc table.t-plain td,.doc table.t-plain th{border:0}
+.doc table.t-plain thead th{border-bottom:.75pt solid #000}
+.doc table.t-dark th{background:#000;color:#fff}
+.doc tr.pgspace td{border:0!important;padding:0!important;background:none!important;font-size:0;line-height:0}
+.doc table.t-lines tr.pgspace + tr > *{border-top:.75pt solid #000}
+.doc td.cs,.doc th.cs{background:#cfe0ee;color:#000}
+.doc table.has-cs ::selection{background:transparent}
+.pnums{position:absolute;inset:0;pointer-events:none;user-select:none}
+.pnums .softgap{position:absolute;left:-4px;right:-4px;height:28px;background:var(--bg);
+  box-shadow:inset 0 7px 6px -6px rgba(0,0,0,.22),inset 0 -7px 6px -6px rgba(0,0,0,.22)}
+.pnums span{position:absolute;right:var(--pad);font:9pt Calibri, Carlito, sans-serif;color:#555;transform:translateY(-50%)}
+.tpick{gap:6px}
+.tpick.btn{display:inline-flex;align-items:center;gap:8px;padding:4px 8px}
+.tpick-caret{font-size:10px;color:var(--muted)}
+.lbl2{font-size:13px}
+.mini-paper{display:inline-flex;background:#fff;padding:3px;border-radius:3px;box-shadow:0 0 0 1px var(--line);line-height:0}
+table.mini{border-collapse:collapse;width:42px}
+table.mini th,table.mini td{height:5px;padding:0;border:1px solid #000;background:#fff}
+.mini.t-lines th,.mini.t-lines td{border-width:0 0 1px 0}
+.mini.t-lines tr:first-child th{border-top-width:1px}
+.mini.t-greyhead th{background:#c4c4c4}
+.mini.t-zebra th,.mini.t-zebra td{border-color:#9a9a9a}
+.mini.t-zebra tr:nth-child(3) td{background:#e2e2e2}
+.mini.t-plain th,.mini.t-plain td{border:0}
+.mini.t-plain th{border-bottom:1px solid #000}
+.mini.t-dark th{background:#000}
+.cbtn{position:relative;flex-direction:column;gap:1px}
+.cbtn .cico{font-weight:700;font-family:Georgia,serif;line-height:1}
+.cbtn .cbar{display:block;width:18px;height:4px;border-radius:1px;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.cpop{position:fixed;z-index:31;padding:10px;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:8px;
+  box-shadow:0 6px 20px rgba(0,0,0,.2);font-family:var(--ui);font-size:14px;width:252px}
+.cpop .ct{font-weight:600;margin:0 0 8px}
+.cpop .sw{display:grid;grid-template-columns:repeat(5,40px);gap:8px}
+.cpop .sw button{width:40px;height:32px;border-radius:5px;border:1px solid rgba(0,0,0,.25);cursor:pointer;padding:0}
+.cpop .sw button:hover{outline:2px solid var(--accent);outline-offset:1px}
+.cpop .none{margin-top:10px;width:100%;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:8px;cursor:pointer;font-size:14px}
+.tpop{position:fixed;z-index:31;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;padding:6px;width:min(380px,calc(100vw - 16px));
+  background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.2);font-family:var(--ui);font-size:13px}
+.tpop button{display:flex;align-items:center;gap:10px;padding:8px;border:1px solid transparent;border-radius:6px;background:none;cursor:pointer;text-align:left;color:inherit}
+.tpop button:hover{background:var(--accent-soft)}
+.tpop button.on{border-color:var(--accent);background:var(--accent-soft)}
+.tpop .mini-paper{padding:4px}
+.tpop table.mini{width:56px}
+.tpop table.mini th,.tpop table.mini td{height:7px}
+.cellmenu{position:fixed;z-index:30;display:flex;flex-direction:column;gap:2px;padding:4px;background:var(--panel);color:var(--fg);
+  border:1px solid var(--line);border-radius:7px;box-shadow:0 4px 16px rgba(0,0,0,.18);font-family:var(--ui);font-size:13px}
+.cellmenu button{background:none;border:0;text-align:left;padding:6px 10px;border-radius:5px;cursor:pointer;white-space:nowrap}
+.cellmenu button:hover{background:var(--accent-soft)}
+.cellmenu button.danger{color:var(--danger)}
+
+/* Skjul og vis sidepanelene (PC) */
+.panelx{margin-left:auto;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:6px;padding:6px 10px;font-size:14px;cursor:pointer;line-height:1}
+.panelx:hover{border-color:var(--accent)}
+.panelx .x{font-size:18px;line-height:1}
+.tools-head{display:flex;align-items:center;gap:8px}
+.tools-head .ttl{font-weight:700;font-size:16px}
+.side-head .brandrow{display:flex;align-items:center;gap:8px}
+.showbtn{display:none;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:6px;padding:8px 12px;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap;flex:none}
+.showbtn:hover{border-color:var(--accent)}
+@media (min-width:761px){
+  .app.no-tools{grid-template-columns:0 minmax(0,1fr) 480px}
+  .app.no-side{grid-template-columns:380px minmax(0,1fr) 0}
+  .app.no-tools.no-side{grid-template-columns:0 minmax(0,1fr) 0}
+  .app.no-tools > .tools, .app.no-side > .side{display:none}
+  .app.no-side > .topbar{grid-column:1 / 4}
+  .app.no-tools #showTools, .app.no-side #showSide{display:inline-flex}
+  .app.no-side .zoomctl{right:64px}
+}
+@media (max-width:760px){ .panelx{display:none} }
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr)}
+  .app > .topbar{grid-column:1;grid-row:1}
+  .app > .tools{grid-column:1;grid-row:2}
+  .app > .main{grid-column:1;grid-row:3}
+  .topbar{padding:8px 12px}
+  .topbar .titlein{font-size:18px}
+  .side{position:fixed;inset:0 0 0 auto;width:min(480px,92vw);z-index:20;transform:translateX(105%);transition:transform .2s;box-shadow:0 0 30px rgba(0,0,0,.25)}
+  .side.open{transform:none}
+  .menu-toggle{display:inline-flex}
+  .sheet{--pad:16px;padding:18px 16px;min-height:60vh}
+  .zoomctl{display:none}
+  .zoomwrap{width:auto!important;height:auto!important;overflow:visible}
+  .zoomwrap > .sheet{transform:none!important;max-width:100%}
+  .toolbar select.font{width:110px}
+}
+@media (prefers-reduced-motion:reduce){.side{transition:none}}
+</style>
+
+<div class="app">
+  <aside class="side" id="side">
+    <div class="side-head">
+      <div class="brandrow"><div class="brand">Mine dokumenter</div><button class="panelx" id="hideSide" type="button" title="Skjul dokumentlisten" aria-label="Skjul dokumentlisten">Skjul <span class="x">×</span></button></div>
+      <button class="newdoc" id="newDoc">+ Nytt dokument</button>
+    </div>
+    <div class="side-list" id="sideList"></div>
+  </aside>
+
+  <header class="topbar">
+    <button class="showbtn" id="showTools" type="button" title="Vis verktøypanelet">› Verktøy</button>
+    <input class="titlein" id="titleIn" placeholder="Uten tittel" aria-label="Dokumenttittel" disabled>
+    <button class="showbtn" id="showSide" type="button" title="Vis dokumentlisten">Dokumenter ‹</button>
+  </header>
+
+  <aside class="tools" id="tools">
+    <div class="tools-head"><span class="ttl">Verktøy</span><button class="panelx" id="hideTools" type="button" title="Skjul verktøypanelet" aria-label="Skjul verktøypanelet">Skjul <span class="x">×</span></button></div>
+    <div class="docbar">
+      <button class="btn menu-toggle" id="menuToggle">Dokumenter</button>
+      <label>Mappe <select id="folderSel" disabled></select></label>
+      <span class="status" id="status"></span>
+      <button class="btn" id="pdfBtn" disabled>Last ned PDF</button>
+      <button class="btn" id="docxBtn" disabled>Last ned Word</button>
+      <button class="btn danger" id="delBtn" disabled>Slett</button>
+    </div>
+
+    <div class="toolbar" id="toolbar">
+      <div class="grp">
+        <button class="tb" data-cmd="undo" title="Angre (Ctrl+Z)"><svg viewBox="0 0 16 16"><path d="M5 3 2 6l3 3"/><path d="M2 6h7.5a4 4 0 0 1 0 8H7"/></svg></button>
+        <button class="tb" data-cmd="redo" title="Gjør om (Ctrl+Y)"><svg viewBox="0 0 16 16"><path d="m11 3 3 3-3 3"/><path d="M14 6H6.5a4 4 0 0 0 0 8H9"/></svg></button>
+      </div>
+      <div class="grp">
+        <select id="blockSel" title="Stil" aria-label="Stil">
+          <option value="p">Brødtekst</option>
+          <option value="h1">Overskrift 1</option>
+          <option value="h2">Overskrift 2</option>
+          <option value="h3">Overskrift 3</option>
+        </select>
+      </div>
+      <div class="grp">
+        <select id="fontSel" class="font" title="Font" aria-label="Font"></select>
+        <select id="sizeSel" title="Skriftstørrelse" aria-label="Skriftstørrelse"></select>
+      </div>
+      <div class="grp">
+        <button class="tb" data-cmd="bold" title="Fet (Ctrl+B)"><b>F</b></button>
+        <button class="tb" data-cmd="italic" title="Kursiv (Ctrl+I)"><i style="font-family:Georgia,serif">K</i></button>
+        <button class="tb" data-cmd="underline" title="Understreket (Ctrl+U)"><u>U</u></button>
+      </div>
+      <div class="grp">
+        <span class="lbl">Farge</span>
+        <button class="tb cbtn" id="fgBtn" title="Tekstfarge" aria-haspopup="true"><span class="cico">A</span><span class="cbar" id="fgBar" style="background:#C00000"></span></button>
+        <button class="tb cbtn" id="bgBtn" title="Markering (bakgrunnsfarge)" aria-haspopup="true"><svg viewBox="0 0 16 16"><path d="M10.5 2.5l3 3-6.5 6.5H4v-3z"/><path d="M3 14h10"/></svg><span class="cbar" id="bgBar" style="background:#FFFF00"></span></button>
+      </div>
+      <div class="grp">
+        <span class="lbl">Linjeavstand</span>
+        <select id="lhSel" title="Linjeavstand" aria-label="Linjeavstand">
+          <option value="1.2">1,0</option>
+          <option value="1.38" selected>1,15</option>
+          <option value="1.8">1,5</option>
+          <option value="2.4">2,0</option>
+        </select>
+      </div>
+      <div class="grp">
+        <button class="tb" data-cmd="justifyLeft" title="Venstrejuster"><svg viewBox="0 0 16 16"><path d="M2 3h12M2 6.5h8M2 10h12M2 13.5h8"/></svg></button>
+        <button class="tb" data-cmd="justifyCenter" title="Midtstill"><svg viewBox="0 0 16 16"><path d="M2 3h12M4 6.5h8M2 10h12M4 13.5h8"/></svg></button>
+        <button class="tb" data-cmd="justifyRight" title="Høyrejuster"><svg viewBox="0 0 16 16"><path d="M2 3h12M6 6.5h8M2 10h12M6 13.5h8"/></svg></button>
+        <button class="tb" data-cmd="justifyFull" title="Blokkjuster"><svg viewBox="0 0 16 16"><path d="M2 3h12M2 6.5h12M2 10h12M2 13.5h12"/></svg></button>
+      </div>
+      <div class="grp">
+        <button class="tb" data-cmd="insertUnorderedList" title="Punktliste"><svg viewBox="0 0 16 16"><path d="M6 4h8M6 8h8M6 12h8"/><circle cx="2.6" cy="4" r=".9" fill="currentColor"/><circle cx="2.6" cy="8" r=".9" fill="currentColor"/><circle cx="2.6" cy="12" r=".9" fill="currentColor"/></svg></button>
+        <button class="tb" data-cmd="insertOrderedList" title="Nummerert liste"><svg viewBox="0 0 16 16"><path d="M6 4h8M6 8h8M6 12h8"/><path d="M2 2.8 3 2.2v3.3M1.8 7.6c.4-.6 1.8-.6 1.8.3 0 .7-1.8 1.4-1.8 2h1.9" stroke-width="1.2"/></svg></button>
+      </div>
+      <div class="grp">
+        <button class="tb" id="tableBtn" title="Sett inn tabell"><svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 6.5h12M2 10h12M6 3v10M10 3v10"/></svg></button>
+        <button class="tb tcell" data-t="rowAfter" title="Ny rad under" disabled>+ rad</button>
+        <button class="tb tcell" data-t="colAfter" title="Ny kolonne til høyre" disabled>+ kol</button>
+        <button class="tb tcell" data-t="rowDel" title="Fjern rad" disabled>− rad</button>
+        <button class="tb tcell" data-t="colDel" title="Fjern kolonne" disabled>− kol</button>
+        <button class="tb tcell" data-t="tableDel" title="Slett hele tabellen" disabled>Slett tabell</button>
+        <button class="tb tcell tpick" id="tStyleBtn" title="Tabellstil" aria-haspopup="true" disabled></button>
+      </div>
+      <div class="grp">
+        <button class="tb" id="tocBtn" title="Sett inn innholdsfortegnelse. Den oppdateres av seg selv når du endrer overskrifter.">Innholdsfortegnelse</button>
+        <button class="tb" id="breakBtn" title="Sett inn sideskift (Ctrl+Shift+Enter)">Sideskift</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <section class="main">
+    <div class="confirm" id="confirmBar" hidden>
+      <span id="confirmText"></span>
+      <button class="btn danger" id="confirmYes">Slett</button>
+      <button class="btn" id="confirmNo">Avbryt</button>
+    </div>
+
+    <div class="panel" id="tablePanel" hidden>
+      <strong id="tPanelTitle">Ny tabell</strong>
+      <label>Kolonner <input type="number" id="tCols" min="1" max="12" value="3"></label>
+      <label>Rader <input type="number" id="tRows" min="1" max="200" value="3"></label>
+      <label><input type="checkbox" id="tHead" checked> Overskriftsrad</label>
+      <span class="lbl2">Utseende</span> <button class="btn tpick" id="tStyleNewBtn" type="button" aria-haspopup="true"></button>
+      <button class="btn primary" id="tInsert">Sett inn</button>
+      <button class="btn" id="tCancel">Avbryt</button>
+      <span class="status err" id="tWarn"></span>
+    </div>
+
+    <div class="tpop" id="tPop" hidden role="menu"></div>
+    <div class="cpop" id="cPop" hidden role="menu"></div>
+
+    <div class="cellmenu" id="cellMenu" hidden>
+      <button data-cm="rows" class="danger"></button>
+      <button data-cm="cols" class="danger"></button>
+      <button data-cm="clear">Tøm innholdet</button>
+      <button data-cm="table" class="danger">Slett hele tabellen</button>
+    </div>
+
+
+    <div class="scroll" id="scroll">
+      <div class="placeholder" id="placeholder">
+        <h2>Laster dokumentene …</h2>
+      </div>
+      <div class="zoomwrap" id="zoomwrap">
+      <div class="sheet" id="sheet" hidden>
+        <div class="doc" id="editor" contenteditable="true" spellcheck="true" lang="nb"></div>
+        <div class="pnums" id="pnums" aria-hidden="true"></div>
+      </div>
+      </div>
+    </div>
+    <div class="zoomctl" id="zoomCtl" role="group" aria-label="Zoom" hidden>
+      <button class="btn" id="zOut" title="Zoom ut" aria-label="Zoom ut">−</button>
+      <select id="zSel" title="Zoom" aria-label="Zoom"></select>
+      <button class="btn" id="zIn" title="Zoom inn" aria-label="Zoom inn">+</button>
+    </div>
+  </section>
+</div>
+
+<script src="config.js"></script>
+<script src="gh-store.js"></script>
+<script>
+(() => {
+const FONTS = [
+  ["Calibri", "Calibri, Carlito, 'Segoe UI', sans-serif"],
+  ["Cambria", "Cambria, Caladea, Georgia, serif"],
+  ["Arial", "Arial, Arimo, Helvetica, sans-serif"],
+  ["Times New Roman", "'Times New Roman', Tinos, Times, serif"],
+  ["Garamond", "Garamond, 'EB Garamond', Georgia, serif"],
+  ["Georgia", "Georgia, Tinos, serif"],
+  ["Verdana", "Verdana, Arimo, sans-serif"]
+];
+const SIZES = [8, 9, 10, 10.5, 11, 12, 14, 16, 18, 20, 24, 28, 36];
+const DEFAULT_FOLDERS = ["Operations", "Concessions", "Felles"];
+
+const $ = id => document.getElementById(id);
+const editor = $("editor"), sheet = $("sheet"), placeholder = $("placeholder");
+const titleIn = $("titleIn"), folderSel = $("folderSel"), statusEl = $("status");
+
+let db = null, downloads = null;
+let docs = {};                 // id -> data
+let folders = DEFAULT_FOLDERS.slice();
+let currentId = null, dirty = false, saveTimer = null, savedRange = null;
+let pendingSize = null, pendingFont = null, confirmAction = null;
+let local = false;             // true når lagring ikke er tilgjengelig
+
+/* ---------- Hjelpere ---------- */
+const fmtDate = ts => {
+  if (!ts) return "";
+  const d = new Date(ts), now = new Date();
+  const same = d.toDateString() === now.toDateString();
+  const hm = d.toLocaleTimeString("nb-NO", {hour:"2-digit", minute:"2-digit"});
+  return same ? "I dag " + hm : d.toLocaleDateString("nb-NO", {day:"numeric", month:"short", year:"numeric"});
+};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function setStatus(t, err){ statusEl.textContent = t; statusEl.classList.toggle("err", !!err); }
+
+/* ---------- Rensing av innhold (innliming og lasting) ---------- */
+const TAGS = new Set(["P","H1","H2","H3","B","STRONG","I","EM","U","UL","OL","LI","TABLE","THEAD","TBODY","TR","TD","TH","BR","SPAN","DIV"]);
+const DROP = new Set(["SCRIPT","STYLE","META","LINK","IFRAME","OBJECT","EMBED","TITLE","HEAD","SVG","IMG","VIDEO","AUDIO","CANVAS","INPUT","BUTTON","SELECT","TEXTAREA","FORM"]);
+const STYLES = ["font-size","font-family","line-height","text-align","font-weight","font-style","text-decoration","color","background-color"];
+const CLASSES = new Set(["pagebreak","toc","toc-title","toc-l1","toc-l2","toc-l3","toc-empty","toc-t","toc-dots","toc-n","t-lines","t-greyhead","t-zebra","t-plain","t-dark","t-fixed"]);
+const RENAME = {H4:"H3",H5:"H3",H6:"H3"};
+function unwrap(el){ const p = el.parentNode; while (el.firstChild) p.insertBefore(el.firstChild, el); el.remove(); }
+function cleanNode(node){
+  [...node.childNodes].forEach(n => {
+    if (n.nodeType === 3) return;
+    if (n.nodeType !== 1) { n.remove(); return; }
+    let tag = n.tagName.toUpperCase();
+    if (DROP.has(tag) || tag.includes(":")) { if (tag.includes(":") && n.textContent.trim()) { cleanNode(n); unwrap(n); } else n.remove(); return; }
+    if (RENAME[tag]) { const h = document.createElement("h3"); while (n.firstChild) h.appendChild(n.firstChild); n.replaceWith(h); n = h; tag = "H3"; }
+    cleanNode(n);
+    if (!TAGS.has(tag)) { unwrap(n); return; }
+    const style = n.getAttribute("style") || "";
+    const cls = [...n.classList].filter(c => CLASSES.has(c));
+    const span = {colspan:n.getAttribute("colspan"), rowspan:n.getAttribute("rowspan"), h:n.getAttribute("data-h")};
+    [...n.attributes].forEach(a => n.removeAttribute(a.name));
+    if (cls.length) n.className = cls.join(" ");
+    if (span.colspan && /^\d+$/.test(span.colspan)) n.setAttribute("colspan", span.colspan);
+    if (span.rowspan && /^\d+$/.test(span.rowspan)) n.setAttribute("rowspan", span.rowspan);
+    if (span.h && /^\d+$/.test(span.h)) n.setAttribute("data-h", span.h);
+    const kept = [];
+    style.split(";").forEach(rule => {
+      const i = rule.indexOf(":"); if (i < 0) return;
+      const k = rule.slice(0, i).trim().toLowerCase(), v = rule.slice(i + 1).trim();
+      if (STYLES.includes(k) && v && !/url|expression|javascript/i.test(v) && v.length < 200) kept.push(k + ":" + v);
+      /* Kolonnebredde i prosent beholdes bare på tabellceller */
+      else if (k === "width" && (tag === "TD" || tag === "TH") && /^\d+(\.\d+)?%$/.test(v)) kept.push(k + ":" + v);
+    });
+    if (kept.length) n.setAttribute("style", kept.join(";"));
+    if (n.classList.contains("pagebreak") || n.classList.contains("toc")) n.setAttribute("contenteditable", "false");
+    if (tag === "SPAN" && !n.attributes.length) unwrap(n);
+  });
+}
+function sanitize(html){ const t = document.createElement("template"); t.innerHTML = html || ""; cleanNode(t.content); return t.innerHTML; }
+
+/* ---------- Markering ---------- */
+document.addEventListener("selectionchange", () => {
+  const s = getSelection();
+  if (s.rangeCount && editor.contains(s.anchorNode)) { savedRange = s.getRangeAt(0).cloneRange(); updateToolbar(); }
+});
+function restore(){
+  flushTyping();
+  const cur = getSelection();
+  if (document.activeElement === editor && cur.rangeCount && editor.contains(cur.anchorNode)) { savedRange = cur.getRangeAt(0).cloneRange(); return; }
+  editor.focus({preventScroll:true});
+  if (savedRange) { const s = getSelection(); s.removeAllRanges(); s.addRange(savedRange); }
+}
+function exec(cmd, val){ restore(); document.execCommand(cmd, false, val ?? null); afterEdit(); }
+
+/* ---------- Font og størrelse ---------- */
+function convertFonts(){
+  editor.querySelectorAll('font[size="7"]').forEach(f => {
+    const s = document.createElement("span"); s.style.fontSize = (pendingSize || 11) + "pt";
+    while (f.firstChild) s.appendChild(f.firstChild);
+    s.querySelectorAll("span").forEach(x => { x.style.fontSize = ""; if (!x.getAttribute("style")) unwrap(x); });
+    f.replaceWith(s);
+  });
+  editor.querySelectorAll("font[face]").forEach(f => {
+    const entry = FONTS.find(x => x[0] === f.getAttribute("face"));
+    const s = document.createElement("span"); s.style.fontFamily = entry ? entry[1] : FONTS[0][1];
+    while (f.firstChild) s.appendChild(f.firstChild);
+    s.querySelectorAll("span").forEach(x => { x.style.fontFamily = ""; if (!x.getAttribute("style")) unwrap(x); });
+    f.replaceWith(s);
+  });
+  editor.querySelectorAll("font").forEach(unwrap);
+}
+function applySize(pt){
+  pendingSize = pt; restore();
+  document.execCommand("styleWithCSS", false, false);
+  document.execCommand("fontSize", false, "7");
+  convertFonts(); afterEdit();
+}
+function applyFont(name){
+  pendingFont = name; restore();
+  document.execCommand("styleWithCSS", false, false);
+  document.execCommand("fontName", false, name);
+  convertFonts(); afterEdit();
+}
+
+/* ---------- Linjeavstand ---------- */
+function blocksInRange(){
+  if (!savedRange) return [];
+  const all = [...editor.querySelectorAll("p,h1,h2,h3,li,td,th")];
+  let hit = all.filter(el => savedRange.intersectsNode(el) && !el.querySelector("p,h1,h2,h3,li"));
+  if (!hit.length) {
+    let n = savedRange.startContainer; n = n.nodeType === 3 ? n.parentNode : n;
+    const b = n.closest && n.closest("p,h1,h2,h3,li,td,th"); if (b && editor.contains(b)) hit = [b];
+  }
+  return hit;
+}
+function applyLineHeight(v){
+  restore();
+  let blocks = blocksInRange();
+  if (!blocks.length) { document.execCommand("formatBlock", false, "<p>"); savedRange = getSelection().getRangeAt(0).cloneRange(); blocks = blocksInRange(); }
+  blocks.forEach(b => b.style.lineHeight = v);
+  afterEdit();
+}
+
+/* ---------- Verktøylinjestatus ---------- */
+function updateToolbar(){
+  ["bold","italic","underline","insertUnorderedList","insertOrderedList","justifyLeft","justifyCenter","justifyRight","justifyFull"].forEach(c => {
+    const b = document.querySelector('.tb[data-cmd="' + c + '"]');
+    if (b) { let on = false; try { on = document.queryCommandState(c); } catch(e){} b.classList.toggle("on", on); }
+  });
+  let blk = ""; try { blk = (document.queryCommandValue("formatBlock") || "").toLowerCase(); } catch(e){}
+  $("blockSel").value = ["h1","h2","h3"].includes(blk) ? blk : "p";
+  if (savedRange) {
+    let n = savedRange.startContainer; n = n.nodeType === 3 ? n.parentNode : n;
+    if (n && editor.contains(n) || n === editor) {
+      const cs = getComputedStyle(n);
+      const pt = Math.round(parseFloat(cs.fontSize) * 0.75 * 2) / 2;
+      const sizeSel = $("sizeSel");
+      if (![...sizeSel.options].some(o => +o.value === pt)) { const o = new Option(String(pt).replace(".", ","), pt); o.dataset.temp = 1; sizeSel.add(o); }
+      sizeSel.value = pt;
+      const fam = cs.fontFamily.toLowerCase();
+      const f = FONTS.find(x => x[1].toLowerCase().split(",").some(p => fam.split(",")[0].replace(/['"]/g,"").trim() === p.replace(/['"]/g,"").trim()));
+      $("fontSel").value = f ? f[0] : "Calibri";
+      const blockEl = n.closest("p,h1,h2,h3,li,td,th");
+      const lh = blockEl && blockEl.style.lineHeight;
+      $("lhSel").value = ["1.2","1.38","1.8","2.4"].includes(lh) ? lh : "1.38";
+      const cell = n.closest("td,th");
+      document.querySelectorAll(".tcell").forEach(b => b.disabled = !cell);
+      if (cell) setPickBtn($("tStyleBtn"), TSTYLES.find(c => cell.closest("table").classList.contains(c)) || "", true);
+    }
+  }
+}
+
+/* ---------- Tekstfarge og markering ---------- */
+const FG = [["#000000","Svart"],["#595959","Mørk grå"],["#C00000","Rød"],["#E26B0A","Oransje"],["#B8860B","Mørk gul"],
+            ["#2E7D32","Grønn"],["#1F4E79","Mørk blå"],["#2F75B5","Blå"],["#7030A0","Lilla"],["#FFFFFF","Hvit"]];
+const BG = [["#FFFF00","Gul"],["#FFE699","Lys oransje"],["#C6EFCE","Lys grønn"],["#DDEBF7","Lys blå"],["#F8CBAD","Lys rød"],
+            ["#E4D7F5","Lys lilla"],["#E7E6E6","Lys grå"],["#BDD7EE","Blå"],["#A9D08E","Grønn"],["#FFC7CE","Rosa"]];
+const cPop = $("cPop");
+let cFor = null;
+function openColors(kind, btn){
+  if (cFor === kind) { closeColors(); return; }
+  cFor = kind;
+  const list = kind === "fg" ? FG : BG;
+  cPop.innerHTML = '<div class="ct">' + (kind === "fg" ? "Tekstfarge" : "Markering") + '</div><div class="sw">' +
+    list.map(([c, n]) => '<button type="button" data-c="' + c + '" title="' + n + '" aria-label="' + n + '" style="background:' + c + '"></button>').join("") +
+    '</div><button type="button" class="none" data-c="">' + (kind === "fg" ? "Automatisk (svart)" : "Ingen markering") + '</button>';
+  cPop.hidden = false;
+  const r = btn.getBoundingClientRect(), w = cPop.offsetWidth, h = cPop.offsetHeight;
+  cPop.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px";
+  cPop.style.top = (r.bottom + h + 6 > innerHeight ? Math.max(8, r.top - h - 6) : r.bottom + 6) + "px";
+}
+function closeColors(){ cPop.hidden = true; cFor = null; }
+function applyColor(kind, c){
+  restore();
+  document.execCommand("styleWithCSS", false, true);
+  if (kind === "fg") document.execCommand("foreColor", false, c || "#000000");
+  else { if (!document.execCommand("hiliteColor", false, c || "transparent")) document.execCommand("backColor", false, c || "transparent"); }
+  document.execCommand("styleWithCSS", false, false);
+  if (!c && kind === "bg") editor.querySelectorAll('[style*="background-color"]').forEach(el => {
+    if (/transparent|rgba\(0, 0, 0, 0\)/.test(el.style.backgroundColor)) { el.style.backgroundColor = ""; if (!el.getAttribute("style")) { if (el.tagName === "SPAN") unwrap(el); else el.removeAttribute("style"); } }
+  });
+  if (c) $(kind === "fg" ? "fgBar" : "bgBar").style.background = c;
+  afterEdit();
+}
+cPop.addEventListener("mousedown", e => e.preventDefault());
+cPop.addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (!b) return; const k = cFor; closeColors(); applyColor(k, b.dataset.c); });
+$("fgBtn").addEventListener("click", e => { e.stopPropagation(); openColors("fg", $("fgBtn")); });
+$("bgBtn").addEventListener("click", e => { e.stopPropagation(); openColors("bg", $("bgBtn")); });
+document.addEventListener("click", e => { if (!cPop.hidden && !cPop.contains(e.target)) closeColors(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !cPop.hidden) closeColors(); });
+
+/* ---------- Tabeller ---------- */
+function insertTable(rows, cols, head, style){
+  let h = style ? '<table class="' + style + '">' : "<table>";
+  if (head) { h += "<thead><tr>" + Array.from({length:cols}, (_, i) => "<th><br></th>").join("") + "</tr></thead>"; }
+  h += "<tbody>" + Array.from({length: head ? Math.max(rows - 1, 1) : rows}, () => "<tr>" + "<td><br></td>".repeat(cols) + "</tr>").join("") + "</tbody></table>";
+  restore();
+  const tpl = document.createElement("template"); tpl.innerHTML = h;
+  const table = tpl.content.firstElementChild;
+  /* Tabellen settes inn etter avsnittet markøren står i, eller erstatter et tomt avsnitt */
+  let n = savedRange ? savedRange.startContainer : null;
+  if (n && n.nodeType === 3) n = n.parentNode;
+  let top = n && editor.contains(n) && n !== editor ? n : null;
+  while (top && top.parentNode !== editor) top = top.parentNode;
+  if (!top) editor.appendChild(table);
+  else if (top.tagName === "P" && !top.textContent.trim() && !top.querySelector("ul,ol,table")) top.replaceWith(table);
+  else top.after(table);
+  if (!table.nextElementSibling || table.nextElementSibling.tagName !== "P") { const p = document.createElement("p"); p.innerHTML = "<br>"; table.after(p); }
+  editor.focus({preventScroll:true}); caretInto(table.querySelector("td,th"), true);
+  afterEdit();
+  table.scrollIntoView({block:"nearest"});
+}
+/* Sletting av markerte tabeller: tabeller som er helt markert, eller der markeringen går ut over tabellen, fjernes */
+editor.addEventListener("keydown", e => {
+  if (e.key !== "Backspace" && e.key !== "Delete") return;
+  const sel = getSelection(); if (!sel.rangeCount || sel.isCollapsed) return;
+  const r = sel.getRangeAt(0); if (!editor.contains(r.commonAncestorContainer)) return;
+  const doomed = [...editor.querySelectorAll("table")].filter(t => {
+    if (!r.intersectsNode(t)) return false;
+    const inside = t.contains(r.startContainer) && t.contains(r.endContainer);
+    if (!inside) return true;
+    const cells = t.querySelectorAll("td,th");
+    return r.intersectsNode(cells[0]) && r.intersectsNode(cells[cells.length - 1]) && cells.length > 1;
+  });
+  if (!doomed.length) return;
+  e.preventDefault(); flushTyping(); stripSpacers();
+  const afterLast = doomed[doomed.length - 1].nextSibling;
+  const marker = document.createElement("span");
+  doomed[0].before(marker);
+  doomed.forEach(t => t.remove());
+  const s2 = getSelection();
+  if (!s2.isCollapsed && s2.rangeCount && editor.contains(s2.anchorNode) && s2.toString().trim()) document.execCommand("delete");
+  if (marker.isConnected) {
+    let p = marker.parentNode === editor ? null : marker.closest("p,h1,h2,h3,li");
+    if (!p) { p = document.createElement("p"); p.innerHTML = "<br>"; marker.replaceWith(p); }
+    else marker.remove();
+    caretInto(p, true);
+  }
+  afterEdit();
+});
+/* Rydder ugyldig struktur: lister og tabeller inne i avsnitt, og løse tabelldeler */
+function normalizeBlocks(){
+  const BLOCK = /^(UL|OL|TABLE|DIV)$/;
+  const bad = [...editor.querySelectorAll("p,h1,h2,h3")].filter(el => [...el.children].some(c => BLOCK.test(c.tagName)));
+  const loose = [...editor.children].filter(c => /^(THEAD|TBODY|TR)$/.test(c.tagName));
+  const INLINE = n => n.nodeType === 3 ? !!n.textContent.trim() : (n.nodeType === 1 && /^(SPAN|B|STRONG|I|EM|U|BR|FONT|A)$/.test(n.tagName));
+  const stray = [...editor.childNodes].filter(INLINE);
+  if (!bad.length && !loose.length && !stray.length) return;
+  const sel = getSelection();
+  const keep = sel.rangeCount && editor.contains(sel.anchorNode) ? [sel.anchorNode, sel.anchorOffset] : null;
+  bad.forEach(el => {
+    let cur = null;
+    [...el.childNodes].forEach(n => {
+      if (n.nodeType === 1 && BLOCK.test(n.tagName)) { el.before(n); cur = null; }
+      else {
+        if (!cur && ((n.nodeType === 3 && !n.textContent.trim()) || (n.nodeType === 1 && n.tagName === "BR"))) { n.remove(); return; }
+        if (!cur) { cur = document.createElement(el.tagName.toLowerCase()); el.before(cur); }
+        cur.appendChild(n);
+      }
+    });
+    el.remove();
+  });
+  /* Løs tekst rett i dokumentet (som nettleseren kan lage ved sletting) legges i et avsnitt */
+  let curP = null;
+  [...editor.childNodes].forEach(n => {
+    if (INLINE(n)) { if (!curP) { curP = document.createElement("p"); n.before(curP); } curP.appendChild(n); }
+    else if (!(n.nodeType === 3 && !n.textContent.trim() && curP)) curP = null;
+  });
+  loose.forEach(part => {
+    if (!part.isConnected) return;
+    const nx = part.nextElementSibling;
+    let table = nx && nx.tagName === "TABLE" ? nx : null;
+    if (!table) { table = document.createElement("table"); part.before(table); }
+    if (part.tagName === "TR") { let tb = table.tBodies[0]; if (!tb) { tb = document.createElement("tbody"); table.appendChild(tb); } tb.appendChild(part); }
+    else if (part.tagName === "THEAD") table.prepend(part); else table.appendChild(part);
+  });
+  if (keep && keep[0].isConnected) {
+    try { const r = document.createRange(); r.setStart(keep[0], Math.min(keep[1], keep[0].nodeType === 3 ? keep[0].length : keep[0].childNodes.length)); r.collapse(true); sel.removeAllRanges(); sel.addRange(r); savedRange = r.cloneRange(); } catch(e){}
+  }
+}
+function currentCell(){
+  if (!savedRange) return null;
+  let n = savedRange.startContainer; n = n.nodeType === 3 ? n.parentNode : n;
+  const c = n.closest && n.closest("td,th"); return c && editor.contains(c) ? c : null;
+}
+const TSTYLES = ["t-lines","t-greyhead","t-zebra","t-plain","t-dark"];
+/* Stilvelger med forhåndsvisning av hver tabellstil */
+const TSTYLE_NAMES = {"":"Standard","t-lines":"Bare vannrette linjer","t-greyhead":"Grå overskriftsrad","t-zebra":"Annenhver rad grå","t-plain":"Uten rammer","t-dark":"Svart overskriftsrad"};
+const tPop = $("tPop");
+let newStyle = "", popFor = null;
+function miniHTML(st){
+  const row = c => "<tr>" + ("<" + c + "></" + c + ">").repeat(3) + "</tr>";
+  return '<span class="mini-paper"><table class="mini ' + st + '">' + row("th") + row("td") + row("td") + row("td") + "</table></span>";
+}
+function setPickBtn(btn, st, compact){
+  btn.dataset.style = st;
+  btn.innerHTML = miniHTML(st) + (compact ? "" : '<span class="tpick-name">' + TSTYLE_NAMES[st] + "</span>") + '<span class="tpick-caret">▾</span>';
+}
+function openPop(btn, target){
+  popFor = target;
+  const cur = btn.dataset.style || "";
+  tPop.innerHTML = Object.keys(TSTYLE_NAMES).map(st =>
+    '<button type="button" role="menuitemradio" aria-checked="' + (st === cur) + '" data-style="' + st + '"' + (st === cur ? ' class="on"' : "") + ">" +
+    miniHTML(st) + "<span>" + TSTYLE_NAMES[st] + "</span></button>").join("");
+  tPop.hidden = false;
+  const r = btn.getBoundingClientRect(), w = tPop.offsetWidth, h = tPop.offsetHeight;
+  tPop.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px";
+  tPop.style.top = (r.bottom + h + 6 > innerHeight ? Math.max(8, r.top - h - 6) : r.bottom + 6) + "px";
+}
+function closePop(){ tPop.hidden = true; popFor = null; }
+tPop.addEventListener("mousedown", e => e.preventDefault());
+$("tStyleBtn").addEventListener("mousedown", e => e.preventDefault());
+$("tStyleBtn").addEventListener("click", e => { e.stopPropagation(); if (popFor === "bar") closePop(); else openPop($("tStyleBtn"), "bar"); });
+$("tStyleNewBtn").addEventListener("click", e => { e.stopPropagation(); if (popFor === "new") closePop(); else openPop($("tStyleNewBtn"), "new"); });
+document.addEventListener("click", e => { if (!tPop.hidden && !tPop.contains(e.target)) closePop(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !tPop.hidden) closePop(); });
+tPop.addEventListener("click", e => {
+  const b = e.target.closest("[data-style]"); if (!b) return;
+  const st = b.dataset.style, target = popFor; closePop();
+  if (target === "new") { newStyle = st; setPickBtn($("tStyleNewBtn"), st, false); return; }
+  const cell = currentCell(); if (!cell) return;
+  flushTyping();
+  const t = cell.closest("table");
+  TSTYLES.forEach(c => t.classList.remove(c));
+  if (st) t.classList.add(st);
+  if (!t.className) t.removeAttribute("class");
+  setPickBtn($("tStyleBtn"), st, true);
+  editor.focus({preventScroll:true}); if (savedRange) { const sl = getSelection(); sl.removeAllRanges(); sl.addRange(savedRange); }
+  afterEdit();
+});
+setPickBtn($("tStyleBtn"), "", true);
+setPickBtn($("tStyleNewBtn"), "", false);
+function tableOp(op){
+  flushTyping(); stripSpacers();
+  const cell = currentCell(); if (!cell) return;
+  const row = cell.parentNode, table = cell.closest("table");
+  const idx = [...row.children].indexOf(cell);
+  const rows = [...table.rows];
+  if (op === "rowAfter") {
+    const tr = document.createElement("tr");
+    for (let i = 0; i < row.children.length; i++) { const td = document.createElement("td"); td.innerHTML = "<br>"; tr.appendChild(td); }
+    if (row.parentNode.tagName === "THEAD") { let tb = table.tBodies[0]; if (!tb) { tb = document.createElement("tbody"); table.appendChild(tb); } tb.insertBefore(tr, tb.firstChild); }
+    else row.after(tr);
+  } else if (op === "colAfter") {
+    rows.forEach(r => { const ref = r.children[idx]; const c = document.createElement(r.parentNode.tagName === "THEAD" ? "th" : "td"); c.innerHTML = "<br>"; if (ref) ref.after(c); else r.appendChild(c); });
+    clearColWidths(table);
+  } else if (op === "rowDel") {
+    if (rows.length <= 1) { table.remove(); } else row.remove();
+  } else if (op === "colDel") {
+    if (row.children.length <= 1) { table.remove(); } else { rows.forEach(r => r.children[idx] && r.children[idx].remove()); clearColWidths(table); }
+  } else if (op === "tableDel") {
+    table.remove();
+  }
+  table.querySelectorAll("thead:empty,tbody:empty").forEach(x => x.remove());
+  afterEdit();
+}
+
+/* ---------- Kolonnebredde: dra i den loddrette streken mellom to kolonner, som i Word ----------
+   Breddene lagres i prosent på cellene, så tabellen alltid fyller arket og PDF-en får de samme breddene.
+   Når kolonner legges til eller fjernes, blir kolonnene like brede igjen. */
+const COL_EDGE = 5;
+function colInfo(table){
+  const rows = [...table.rows].filter(r => !r.classList.contains("pgspace"));
+  const cols = Math.max(0, ...rows.map(r => [...r.cells].reduce((s, c) => s + (c.colSpan || 1), 0)));
+  const ref = rows.find(r => r.cells.length === cols && [...r.cells].every(c => (c.colSpan || 1) === 1));
+  return {rows, cols, ref};
+}
+function colEdgeAt(e){
+  const cell = e.target && e.target.closest ? e.target.closest("td,th") : null;
+  if (!cell || !editor.contains(cell) || cell.closest("tr.pgspace")) return null;
+  const table = cell.closest("table"); const {cols, ref} = colInfo(table);
+  if (!ref || cols < 2) return null;
+  const cr = cell.getBoundingClientRect();
+  if (e.clientY < cr.top || e.clientY > cr.bottom) return null;
+  const rects = [...ref.cells].map(c => c.getBoundingClientRect());
+  for (let k = 0; k < cols - 1; k++) if (Math.abs(e.clientX - rects[k].right) <= COL_EDGE) return {table, k, ref};
+  return null;
+}
+function clearColWidths(table){
+  if (!table || !table.isConnected) return;
+  table.querySelectorAll("td,th").forEach(c => { if (c.style.width) { c.style.width = ""; if (!c.getAttribute("style")) c.removeAttribute("style"); } });
+  table.classList.remove("t-fixed"); if (!table.className) table.removeAttribute("class");
+}
+function setColWidths(table, pcts){
+  colInfo(table).rows.forEach(r => {
+    if (r.cells.length !== pcts.length || [...r.cells].some(c => (c.colSpan || 1) !== 1)) return;
+    [...r.cells].forEach((c, i) => c.style.width = pcts[i].toFixed(2) + "%");
+  });
+  table.classList.add("t-fixed");
+}
+let colDrag = null;
+editor.addEventListener("mousemove", e => { if (!colDrag) editor.classList.toggle("colhover", !!colEdgeAt(e)); });
+editor.addEventListener("mouseleave", () => { if (!colDrag) editor.classList.remove("colhover"); });
+editor.addEventListener("mousedown", e => {
+  if (e.button !== 0) return;
+  const hit = colEdgeAt(e); if (!hit) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  flushTyping(); stripSpacers();
+  const w0 = [...hit.ref.cells].map(c => c.getBoundingClientRect().width);
+  colDrag = {table:hit.table, k:hit.k, x0:e.clientX, w0, moved:false};
+  document.body.classList.add("coldrag");
+}, true);
+document.addEventListener("mousemove", e => {
+  if (!colDrag) return;
+  const d = colDrag, total = d.w0.reduce((a, b) => a + b, 0), min = Math.max(18, total * 0.04);
+  const dx = Math.max(min - d.w0[d.k], Math.min(d.w0[d.k + 1] - min, e.clientX - d.x0));
+  const w = d.w0.slice(); w[d.k] += dx; w[d.k + 1] -= dx;
+  setColWidths(d.table, w.map(x => x / total * 100));
+  d.moved = true;
+});
+document.addEventListener("mouseup", () => {
+  if (!colDrag) return;
+  const d = colDrag; colDrag = null;
+  document.body.classList.remove("coldrag"); editor.classList.remove("colhover");
+  editor.focus({preventScroll:true});
+  if (d.moved) afterEdit(); else queueLayout();
+});
+
+
+/* Markerte celler: meny for å fjerne rader, kolonner eller bare innholdet */
+const cellMenu = $("cellMenu");
+let menuSel = null;
+function cellOf(node){ node = node && node.nodeType === 3 ? node.parentNode : node; return node && node.closest ? node.closest("td,th") : null; }
+function selectedCells(){
+  const sel = getSelection(); if (!sel.rangeCount || sel.isCollapsed) return null;
+  const r = sel.getRangeAt(0);
+  const c1 = cellOf(r.startContainer), c2 = cellOf(r.endContainer);
+  if (!c1 || !c2 || c1 === c2) return null;
+  const table = c1.closest("table");
+  if (table !== c2.closest("table") || !editor.contains(table)) return null;
+  /* Rektangel mellom første og siste markerte celle, som i Word */
+  const r0 = Math.min(c1.parentNode.rowIndex, c2.parentNode.rowIndex), r1 = Math.max(c1.parentNode.rowIndex, c2.parentNode.rowIndex);
+  const k0 = Math.min(c1.cellIndex, c2.cellIndex), k1 = Math.max(c1.cellIndex, c2.cellIndex);
+  const rows = [...table.rows].slice(r0, r1 + 1).filter(r => !r.classList.contains("pgspace"));
+  const cells = []; rows.forEach(tr => [...tr.cells].forEach(c => { if (c.cellIndex >= k0 && c.cellIndex <= k1) cells.push(c); }));
+  const cols = []; for (let k = k0; k <= k1; k++) cols.push(k);
+  const all = cells.length === table.querySelectorAll("tr:not(.pgspace) > td, tr:not(.pgspace) > th").length;
+  return {table, cells, rows, cols, all};
+}
+function markCells(ms){
+  editor.querySelectorAll(".cs").forEach(c => { c.classList.remove("cs"); if (!c.className) c.removeAttribute("class"); });
+  editor.querySelectorAll("table.has-cs").forEach(t => { t.classList.remove("has-cs"); if (!t.className) t.removeAttribute("class"); });
+  if (ms) { ms.table.classList.add("has-cs"); ms.cells.forEach(c => c.classList.add("cs")); }
+}
+function updateCellMenu(){
+  menuSel = selectedCells();
+  markCells(menuSel);
+  if (!menuSel) { cellMenu.hidden = true; return; }
+  const nr = menuSel.rows.length, nc = menuSel.cols.length;
+  cellMenu.querySelector('[data-cm="rows"]').textContent = nr === 1 ? "Fjern raden" : "Fjern " + nr + " rader";
+  cellMenu.querySelector('[data-cm="cols"]').textContent = nc === 1 ? "Fjern kolonnen" : "Fjern " + nc + " kolonner";
+  const rect = getSelection().getRangeAt(0).getBoundingClientRect();
+  cellMenu.hidden = false;
+  const w = cellMenu.offsetWidth, h = cellMenu.offsetHeight;
+  let x = rect.right + 10, y = rect.top;
+  if (x + w > innerWidth - 8) x = Math.max(8, rect.left - w - 10);
+  y = Math.min(Math.max(8, y), innerHeight - h - 8);
+  cellMenu.style.left = x + "px"; cellMenu.style.top = y + "px";
+}
+document.addEventListener("selectionchange", () => { if (!cellMenu.matches(":hover")) updateCellMenu(); });
+$("scroll").addEventListener("scroll", () => { if (!cellMenu.hidden) updateCellMenu(); });
+cellMenu.addEventListener("mousedown", e => e.preventDefault());
+cellMenu.addEventListener("click", e => {
+  const b = e.target.closest("[data-cm]"); if (!b || !menuSel) return;
+  flushTyping(); stripSpacers();
+  const {table, cells, rows, cols} = menuSel;
+  const after = table.nextElementSibling;
+  if (b.dataset.cm === "table") {
+    table.remove();
+  } else if (b.dataset.cm === "clear") {
+    cells.forEach(c => c.innerHTML = "<br>");
+    editor.focus({preventScroll:true}); caretInto(cells[0], false);
+  } else if (b.dataset.cm === "rows") {
+    if (rows.length >= table.rows.length) table.remove(); else rows.forEach(r => r.remove());
+  } else if (b.dataset.cm === "cols") {
+    const total = Math.max(...[...table.rows].map(r => r.cells.length));
+    if (cols.length >= total) table.remove();
+    else { [...table.rows].forEach(r => cols.slice().reverse().forEach(i => r.cells[i] && r.cells[i].remove())); clearColWidths(table); }
+  }
+  if (table.isConnected) {
+    table.querySelectorAll("thead:empty,tbody:empty").forEach(x => x.remove());
+    if (b.dataset.cm !== "clear") { const c = table.querySelector("td,th"); editor.focus({preventScroll:true}); if (c) caretInto(c, false); }
+  } else if (after) { editor.focus({preventScroll:true}); caretInto(after, false); }
+  cellMenu.hidden = true; menuSel = null; markCells(null);
+  afterEdit();
+});
+/* Tilbaketast eller Delete på markerte celler tømmer dem (hele tabellen slettes hvis alt er markert) */
+editor.addEventListener("keydown", e => {
+  if (e.defaultPrevented || (e.key !== "Backspace" && e.key !== "Delete")) return;
+  const ms = selectedCells(); if (!ms) return;
+  e.preventDefault(); flushTyping(); stripSpacers();
+  if (ms.all) { const after = ms.table.nextElementSibling; ms.table.remove(); if (after) caretInto(after, false); }
+  else { ms.cells.forEach(c => c.innerHTML = "<br>"); caretInto(ms.cells[0], false); }
+  cellMenu.hidden = true; markCells(null); afterEdit();
+});
+
+/* Enter i en tabellcelle gir en ny rad under. Shift+Enter gir ny linje i cellen. Tab går til neste celle. */
+function addRowAfter(row){
+  const table = row.closest("table");
+  const tr = document.createElement("tr");
+  const n = Math.max(...[...table.rows].map(r => r.cells.length));
+  for (let i = 0; i < n; i++) { const td = document.createElement("td"); td.innerHTML = "<br>"; tr.appendChild(td); }
+  if (row.parentNode.tagName === "THEAD") { let tb = table.tBodies[0]; if (!tb) { tb = document.createElement("tbody"); table.appendChild(tb); } tb.insertBefore(tr, tb.firstChild); }
+  else row.after(tr);
+  return tr;
+}
+editor.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const sel = getSelection(); if (!sel.rangeCount) return;
+  let n = sel.anchorNode; n = n && n.nodeType === 3 ? n.parentNode : n;
+  const cell = n && n.closest && n.closest("td,th"); if (!cell || !editor.contains(cell)) return;
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault(); flushTyping(); stripSpacers();
+    const tr = addRowAfter(cell.parentNode);
+    caretInto(tr.cells[0], false); afterEdit();
+  } else if (e.key === "Enter" && e.shiftKey) {
+    e.preventDefault(); document.execCommand("insertLineBreak");
+  } else if (e.key === "Tab") {
+    e.preventDefault(); flushTyping(); stripSpacers();
+    const all = [...cell.closest("table").querySelectorAll("td,th")];
+    let i = all.indexOf(cell) + (e.shiftKey ? -1 : 1);
+    if (i >= all.length) { const tr = addRowAfter(cell.parentNode); caretInto(tr.cells[0], false); afterEdit(); return; }
+    if (i >= 0) caretInto(all[i], true);
+  }
+});
+
+
+/* Enter sist i en overskrift gir et vanlig avsnitt på neste linje, som i Word */
+editor.addEventListener("keydown", e => {
+  if (e.key !== "Enter" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+  const sel = getSelection(); if (!sel.rangeCount || !sel.isCollapsed) return;
+  let n = sel.anchorNode; n = n && n.nodeType === 3 ? n.parentNode : n;
+  const h = n && n.closest && n.closest("h1,h2,h3"); if (!h || !editor.contains(h)) return;
+  const r = document.createRange(); r.selectNodeContents(h); r.setStart(sel.anchorNode, sel.anchorOffset);
+  if (r.toString().length) return; /* markøren står ikke sist i overskriften */
+  e.preventDefault(); flushTyping();
+  const p = document.createElement("p"); p.innerHTML = "<br>"; h.after(p); caretInto(p, false); afterEdit();
+});
+
+/* Tilbaketast først på en side etter et sideskift fjerner sideskiftet, så teksten flytter opp. Delete sist før et sideskift gjør det samme. */
+function topBlock(n){ n = n && n.nodeType === 3 ? n.parentNode : n; while (n && n.parentNode !== editor) n = n.parentNode; return n && n.parentNode === editor ? n : null; }
+function atEdge(block, start){
+  const s = getSelection(); if (!s.rangeCount || !s.isCollapsed) return false;
+  const r = document.createRange(); r.selectNodeContents(block);
+  if (start) r.setEnd(s.anchorNode, s.anchorOffset); else r.setStart(s.anchorNode, s.anchorOffset);
+  return r.toString().length === 0 && !r.cloneContents().querySelector("table,img");
+}
+editor.addEventListener("keydown", e => {
+  if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+  if (e.key !== "Backspace" && e.key !== "Delete") return;
+  const s = getSelection(); if (!s.rangeCount || !s.isCollapsed) return;
+  const block = topBlock(s.anchorNode); if (!block) return;
+  const back = e.key === "Backspace";
+  const nb = back ? block.previousElementSibling : block.nextElementSibling;
+  if (!nb || !atEdge(block, back)) return;
+  if (nb.classList.contains("pagebreak")) {
+    e.preventDefault(); flushTyping();
+    nb.remove();
+    afterEdit(); showCaret();
+  } else if (nb.classList.contains("toc") || nb.tagName === "TABLE") {
+    /* Ikke slå sammen med innholdsfortegnelse eller tabell. Et tomt avsnitt fjernes, ellers flyttes markøren. */
+    e.preventDefault(); flushTyping();
+    if (!block.textContent.trim() && !block.querySelector("table,ul,ol")) {
+      const other = back ? block.nextElementSibling : block.previousElementSibling;
+      if (other && !other.classList.contains("pagebreak") && other.tagName !== "TABLE" && !other.classList.contains("toc")) { block.remove(); caretInto(other, !back); afterEdit(); return; }
+    }
+    if (nb.tagName === "TABLE") { const cells = nb.querySelectorAll("td,th"); caretInto(back ? cells[cells.length - 1] : cells[0], back); }
+  }
+});
+/* ---------- Automatisk nummerering av overskrifter ----------
+   Overskrifter som starter med et tall (for eksempel «2. Hva medarbeideren skal kunne» eller «3.1 Rutiner»)
+   nummereres fortløpende. Overskrift 2 starter på 1 igjen etter hver Overskrift 1, og Overskrift 3 etter hver Overskrift 2.
+   Bare siste tall i nummeret endres; resten følger overskriften over, eller blir stående som du skrev det.
+   Overskrifter uten tall foran blir ikke endret. */
+const NUM_RE = /^(\s*)(\d+(?:\.\d+)+(?=\.?\s)|\d+(?=[.)]\s))/;   /* «2. », «2) », «3.1 » – ikke årstall som «2026 Budsjett» */
+function setHeadingNumber(h, start, oldLen, txt){
+  const sel = getSelection();
+  const aN = sel.rangeCount ? sel.anchorNode : null, aO = sel.rangeCount ? sel.anchorOffset : 0;
+  const w = document.createTreeWalker(h, NodeFilter.SHOW_TEXT);
+  let pos = 0, n, left = oldLen, put = false, caret = null;
+  while ((n = w.nextNode()) && left > 0) {
+    const len = n.data.length;
+    if (pos + len <= start) { pos += len; continue; }
+    const from = Math.max(0, start - pos), take = Math.min(len - from, left);
+    const before = n.data;
+    n.data = before.slice(0, from) + (put ? "" : txt) + before.slice(from + take);
+    if (n === aN && aO >= from) caret = [n, aO >= from + take ? aO - take + (put ? 0 : txt.length) : from + (put ? 0 : txt.length)];
+    put = true; left -= take; pos += len;
+  }
+  if (caret) { try { const r = document.createRange(); r.setStart(caret[0], Math.min(caret[1], caret[0].data.length)); r.collapse(true); sel.removeAllRanges(); sel.addRange(r); savedRange = r.cloneRange(); } catch(e){} }
+}
+function renumberHeadings(){
+  let c1 = 0, c2 = 0, c3 = 0, n1 = null, n2 = null, changed = false;
+  [...editor.querySelectorAll("h1,h2,h3")].forEach(h => {
+    if (h.closest(".toc")) return;
+    const lvl = +h.tagName[1];
+    const m = NUM_RE.exec(h.textContent);
+    if (lvl === 1) { c2 = 0; c3 = 0; n2 = null; }
+    if (lvl === 2) { c3 = 0; }
+    if (!m) { if (lvl === 1) n1 = null; if (lvl === 2) n2 = null; return; }
+    const segs = m[2].split(".");
+    const keep = segs.slice(0, -1).join(".");
+    let want;
+    if (lvl === 1) { c1++; want = segs.length > 1 ? keep + "." + c1 : String(c1); n1 = want; }
+    else if (lvl === 2) { c2++; want = segs.length > 1 ? (n1 || keep) + "." + c2 : String(c2); n2 = want; }
+    else { c3++; want = segs.length > 1 ? (n2 && segs.length === n2.split(".").length + 1 ? n2 : keep) + "." + c3 : String(c3); }
+    if (want !== m[2]) { setHeadingNumber(h, m[1].length, m[2].length, want); changed = true; }
+  });
+  return changed;
+}
+/* ---------- Innholdsfortegnelse ---------- */
+/* Bare overskrifter med tekst kommer med i innholdsfortegnelsen */
+function tocHeads(){ return [...editor.querySelectorAll("h1,h2,h3")].filter(h => !h.closest(".toc") && h.textContent.trim()); }
+function buildToc(){
+  const heads = tocHeads();
+  let html = '<div class="toc-title">Innhold</div>';
+  if (!heads.length) html += '<div class="toc-empty">Ingen overskrifter ennå. Overskrifter du lager med Overskrift 1–3, kommer med her av seg selv.</div>';
+  heads.forEach((h, i) => {
+    const pg = headPages.get(h) || "";
+    html += '<div class="toc-l' + h.tagName[1] + '" data-h="' + i + '"><span class="toc-t">' + esc(h.textContent.trim()) +
+      '</span><span class="toc-dots"></span><span class="toc-n">' + pg + "</span></div>";
+  });
+  return html;
+}
+function insertToc(){
+  const existing = editor.querySelector(".toc");
+  if (existing) { existing.innerHTML = buildToc(); afterEdit(); setStatus("Innholdsfortegnelsen er oppdatert"); return; }
+  exec("insertHTML", '<div class="toc" contenteditable="false">' + buildToc() + '</div><p><br></p>');
+}
+editor.addEventListener("click", e => {
+  const t = e.target.closest("[data-h]"); if (!t || !t.closest(".toc")) return;
+  const heads = tocHeads();
+  const h = heads[+t.dataset.h]; if (!h) return;
+  h.scrollIntoView({behavior:"smooth", block:"start"});
+  editor.focus({preventScroll:true}); caretInto(h, true);
+});
+
+/* ---------- Lagring ---------- */
+/* Sideinndeling: hvert sideskift fyller resten av arket, og et nytt ark starter etter det */
+let layoutQueued = false;
+function queueLayout(){ if (layoutQueued) return; layoutQueued = true; requestAnimationFrame(() => { layoutQueued = false; relayout(); }); }
+/* Sørger for at det alltid finnes et avsnitt å skrive i etter hvert sideskift */
+function ensureStructure(wrapText){
+  if (wrapText) [...editor.childNodes].forEach(n => {
+    if (n.nodeType === 3 && n.textContent.trim()) { const p = document.createElement("p"); n.replaceWith(p); p.appendChild(n); }
+  });
+  editor.querySelectorAll(":scope > .pagebreak").forEach(b => {
+    const nx = b.nextElementSibling;
+    if (!nx || nx.classList.contains("pagebreak")) { const p = document.createElement("p"); p.innerHTML = "<br>"; b.after(p); }
+  });
+}
+function caretInto(el, atEnd){
+  const r = document.createRange(); r.selectNodeContents(el); r.collapse(!atEnd);
+  const s = getSelection(); s.removeAllRanges(); s.addRange(r); savedRange = r.cloneRange();
+}
+/* Klikk på tom flate på et ark: markøren havner i det arket som ble klikket */
+editor.addEventListener("mousedown", e => {
+  ensureStructure(false);
+  const pb = e.target.closest && e.target.closest(".pagebreak");
+  if (pb) { e.preventDefault(); editor.focus({preventScroll:true}); caretInto(pb.nextElementSibling, false); return; }
+  if (e.target !== editor) return;
+  const y = e.clientY;
+  let sheetEls = [], cur = [];
+  for (const k of editor.children) {
+    if (k.classList.contains("pagebreak")) {
+      if (k.getBoundingClientRect().top > y) break;
+      cur = []; continue;
+    }
+    cur.push(k); sheetEls = cur;
+  }
+  if (!sheetEls.length) return;
+  const first = sheetEls[0], last = sheetEls[sheetEls.length - 1];
+  if (y < first.getBoundingClientRect().top) { e.preventDefault(); editor.focus({preventScroll:true}); caretInto(first, false); }
+  else if (y > last.getBoundingClientRect().bottom) { e.preventDefault(); editor.focus({preventScroll:true}); caretInto(last, true); }
+});
+/* Sideoppsett som i Word: A4-sider med fast høyde. Det som ikke får plass, flyttes til neste side.
+   Tabeller deles mellom rader. En overskrift holdes sammen med det som kommer etter den.
+   PDF-en bruker de samme sideskiftene (unitPage), så skjerm og PDF blir like. */
+let softPushed = [], unitPage = new Map(), unitY = new Map();
+function stripSpacers(){ const sp = editor.querySelectorAll("tr.pgspace"); if (!sp.length) return; sp.forEach(r => r.remove()); queueLayout(); }
+function layoutUnits(){
+  const units = [];
+  [...editor.children].forEach(el => {
+    if ((el.tagName === "UL" || el.tagName === "OL") && el.children.length) [...el.children].forEach(li => units.push(li));
+    else if (el.tagName === "TABLE" && el.rows.length) [...el.rows].forEach(r => { if (!r.classList.contains("pgspace")) units.push(r); });
+    else if (el.classList.contains("toc") && el.children.length) [...el.children].forEach(c => units.push(c));
+    else units.push(el);
+  });
+  return units;
+}
+function relayout(){
+  if (sheet.hidden) return;
+  /* Sideinndelingen skal aldri flytte visningen: rulleposisjonen holdes fast mens sidene regnes ut på nytt */
+  const scroller = $("scroll"), keepTop = scroller.scrollTop;
+  try { relayoutInner(); } finally { if (Math.abs(scroller.scrollTop - keepTop) > 0.5) scroller.scrollTop = keepTop; }
+}
+function relayoutInner(){
+  ensureStructure(false);
+  /* Nullstill alle flyttinger (også de nettleseren kopierer til nye avsnitt når du trykker Enter) */
+  editor.querySelectorAll('[style*="margin-top"]').forEach(el => { el.style.marginTop = ""; if (!el.getAttribute("style")) el.removeAttribute("style"); });
+  editor.querySelectorAll("tr.pgspace").forEach(r => r.remove());
+  softPushed = []; unitPage = new Map(); unitY = new Map(); headPages = new Map();
+  const pad = parseFloat(getComputedStyle(sheet).paddingTop) || 0;
+  const a4 = !matchMedia("(max-width:760px)").matches;
+  const pageH = 297 * 96 / 25.4 - 2 * pad;     /* skrivehøyde på én side */
+  const GAP = 28;                               /* mellomrom mellom arkene */
+  const P = pageH + 2 * pad + GAP;              /* avstand fra én sides start til neste */
+  const units = layoutUnits();
+  const top = el => { let y = 0, n = el; while (n && n !== editor) { y += n.offsetTop; n = n.offsetParent; } return y; };
+  const marks = [], gaps = [];
+  let segStart = 0, segPage = 1, k = 0;
+  const pageEndOf = kk => segStart + kk * P + pageH;
+  const pushTo = (el, target) => {
+    if (el.tagName === "TR") {
+      const table = el.closest("table");
+      if (el === [...table.rows].find(r => !r.classList.contains("pgspace"))) { pushTo(table, target); return; }
+      const sp = document.createElement("tr"); sp.className = "pgspace"; sp.setAttribute("contenteditable", "false");
+      const td = document.createElement("td"); td.colSpan = Math.max(1, ...[...table.rows].map(r => [...r.cells].reduce((s, c) => s + (c.colSpan || 1), 0)));
+      sp.appendChild(td); el.before(sp);
+      td.style.height = Math.max(0, target - top(el)) + "px";
+      for (let i = 0; i < 2; i++) { const d = target - top(el); if (Math.abs(d) < 0.5) break; td.style.height = Math.max(0, parseFloat(td.style.height) + d) + "px"; }
+      return;
+    }
+    for (let i = 0; i < 3; i++) {
+      const d = target - top(el); if (Math.abs(d) < 0.5) break;
+      const cur = parseFloat(getComputedStyle(el).marginTop) || 0;
+      el.style.marginTop = Math.max(0, cur + d) + "px";
+    }
+    softPushed.push(el);
+  };
+  const newPage = () => { gaps.push(pageEndOf(k)); marks.push([pad + pageEndOf(k) + pad / 2, segPage + k]); k++; };
+  units.forEach((el, i) => {
+    if (el.classList.contains("pagebreak")) {
+      el.style.marginTop = pad + "px";
+      const prev = el.previousElementSibling;
+      const end = prev ? top(prev) + prev.offsetHeight : segStart;
+      const fill = a4 ? Math.max(0, pageEndOf(k) - end) : 0;
+      el.style.marginTop = (fill + pad) + "px";
+      marks.push([pad + pageEndOf(k) + pad / 2, segPage + k]);
+      segPage = segPage + k + 1; k = 0;
+      segStart = top(el) + el.offsetHeight + pad;
+      return;
+    }
+    if (!a4) return;
+    let t = top(el); const h = el.offsetHeight;
+    while (t >= pageEndOf(k) - 0.5 && t >= segStart + (k + 1) * P - 0.5) newPage();
+    let move = t >= pageEndOf(k) - 0.5 || (t + h > pageEndOf(k) + 0.5 && h <= pageH);
+    /* Overskrift sist på en side flyttes sammen med det som kommer etter den */
+    if (!move && /^H[1-3]$/.test(el.tagName) && t > segStart + k * P + 1) {
+      const nx = units[i + 1];
+      if (nx && !nx.classList.contains("pagebreak")) {
+        const need = top(nx) + nx.offsetHeight - t;
+        if (top(nx) + nx.offsetHeight > pageEndOf(k) + 0.5 && need <= pageH) move = true;
+      }
+    }
+    if (move) { newPage(); pushTo(el, segStart + k * P); t = top(el); }
+    while (t + h > pageEndOf(k) + 0.5 && h > pageH) newPage();
+    const kk = Math.max(0, Math.floor((top(el) - segStart + 2) / P));   /* +2 px tåler avrunding ved sidestart */
+    unitPage.set(el, segPage + kk);
+    unitY.set(el, Math.max(0, top(el) - segStart - kk * P));
+    if (/^H[1-3]$/.test(el.tagName)) headPages.set(el, unitPage.get(el));
+  });
+  if (!a4) {
+    /* Smal skjerm: ingen faste sider, bare ark mellom sideskiftene */
+    let pg = 1;
+    [...editor.children].forEach(el => { if (el.classList.contains("pagebreak")) pg++; else if (/^H[1-3]$/.test(el.tagName)) headPages.set(el, pg); });
+    unitPage = new Map(); unitY = new Map();
+    editor.style.minHeight = "";
+    $("pnums").innerHTML = "";
+  } else {
+    editor.style.minHeight = pageEndOf(k) + "px";
+    marks.push([pad + pageEndOf(k) + pad / 2, segPage + k]);
+    $("pnums").innerHTML =
+      gaps.map(y => '<div class="softgap" style="top:' + Math.round(pad + y + pad) + 'px"></div>').join("") +
+      marks.map(([y, n]) => '<span style="top:' + Math.round(y) + 'px">' + n + "</span>").join("");
+  }
+  const toc = editor.querySelector(".toc");
+  if (toc) {
+    const before = toc.innerHTML; liveToc();
+    if (toc.innerHTML !== before && !relayoutAgain) { relayoutAgain = true; relayout(); relayoutAgain = false; }
+  }
+}
+let headPages = new Map(), relayoutAgain = false;
+window.addEventListener("resize", queueLayout);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueLayout);
+/* Egen angre-historikk: nettleserens egen angre-funksjon tåler ikke endringene programmet gjør selv (tabeller, innholdsfortegnelse, linjeavstand) */
+let hist = [], hIdx = -1, typingTimer = null;
+function cleanHtml(){
+  const t = document.createElement("template"); t.innerHTML = editor.innerHTML;
+  t.content.querySelectorAll("tr.pgspace").forEach(r => r.remove());
+  t.content.querySelectorAll(".pagebreak").forEach(b => b.removeAttribute("style"));
+  t.content.querySelectorAll("[style]").forEach(el => { el.style.marginTop = ""; if (!el.getAttribute("style")) el.removeAttribute("style"); });
+  t.content.querySelectorAll(".cs").forEach(c => { c.classList.remove("cs"); if (!c.className) c.removeAttribute("class"); });
+  t.content.querySelectorAll(".has-cs").forEach(c => { c.classList.remove("has-cs"); if (!c.className) c.removeAttribute("class"); });
+  return t.innerHTML;
+}
+function caretOffset(){
+  const s = getSelection(); if (!s.rangeCount || !editor.contains(s.anchorNode)) return null;
+  const r = document.createRange(); r.setStart(editor, 0);
+  try { r.setEnd(s.anchorNode, s.anchorOffset); } catch(e){ return null; }
+  return r.toString().length;
+}
+function setCaret(off){
+  if (off == null) return;
+  const w = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT); let n, left = off, last = null;
+  while ((n = w.nextNode())) { last = n; if (left <= n.length) break; left -= n.length; }
+  const r = document.createRange();
+  if (n) r.setStart(n, left); else if (last) r.setStart(last, last.length); else r.setStart(editor, 0);
+  r.collapse(true); const s = getSelection(); s.removeAllRanges(); s.addRange(r); savedRange = r.cloneRange();
+}
+function showCaret(){
+  const s = getSelection(); if (!s.rangeCount) return;
+  let n = s.anchorNode; n = n && n.nodeType === 3 ? n.parentNode : n;
+  if (n && editor.contains(n) && n.scrollIntoView) n.scrollIntoView({block:"nearest"});
+}
+function flushTyping(){ if (typingTimer) record(); }
+function resetHistory(){ clearTimeout(typingTimer); typingTimer = null; hist = [{html:cleanHtml(), caret:0}]; hIdx = 0; }
+function record(){
+  clearTimeout(typingTimer); typingTimer = null;
+  const html = cleanHtml();
+  if (hIdx >= 0 && hist[hIdx].html === html) { hist[hIdx].caret = caretOffset(); return; }
+  hist = hist.slice(0, hIdx + 1); hist.push({html, caret:caretOffset()});
+  if (hist.length > 200) hist.shift();
+  hIdx = hist.length - 1;
+}
+function textOf(){ const r = document.createRange(); r.selectNodeContents(editor); return r.toString(); }
+/* Angre/gjør om: visningen står stille, og markøren settes der endringen skjedde. Siden rulles bare hvis endringen er utenfor skjermen. */
+function applyHist(i){
+  const scroller = $("scroll"), keepTop = scroller.scrollTop;
+  const before = textOf();
+  hIdx = i; editor.innerHTML = hist[i].html;
+  relayout(); scroller.scrollTop = keepTop;
+  const after = textOf();
+  let a = 0; const max = Math.min(before.length, after.length);
+  while (a < max && before.charCodeAt(a) === after.charCodeAt(a)) a++;
+  let b = 0;
+  while (b < max - a && before.charCodeAt(before.length - 1 - b) === after.charCodeAt(after.length - 1 - b)) b++;
+  const pos = (a === after.length && a === before.length) ? hist[i].caret : after.length - b;
+  editor.focus({preventScroll:true}); setCaret(pos); scroller.scrollTop = keepTop;
+  const s = getSelection();
+  if (s.rangeCount) {
+    let rc = s.getRangeAt(0).getBoundingClientRect();
+    if (!rc.height) { const n = s.anchorNode && (s.anchorNode.nodeType === 3 ? s.anchorNode.parentNode : s.anchorNode); if (n && n.getBoundingClientRect) rc = n.getBoundingClientRect(); }
+    const box = scroller.getBoundingClientRect();
+    if (rc.height && (rc.top < box.top + 20 || rc.bottom > box.bottom - 20)) scroller.scrollTop += rc.top - box.top - box.height / 3;
+  }
+  markDirty(); updateToolbar();
+}
+function undo(){ if (typingTimer) record(); if (hIdx > 0) applyHist(hIdx - 1); }
+function redo(){ if (typingTimer) record(); if (hIdx < hist.length - 1) applyHist(hIdx + 1); }
+editor.addEventListener("keydown", e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
+  else if (k === "y" || (k === "z" && e.shiftKey)) { e.preventDefault(); redo(); }
+});
+editor.addEventListener("beforeinput", e => {
+  if (e.inputType === "historyUndo") { e.preventDefault(); undo(); }
+  else if (e.inputType === "historyRedo") { e.preventDefault(); redo(); }
+});
+function markDirty(){ dirty = true; setStatus(local ? "Ikke lagret" : "Endret"); clearTimeout(saveTimer); saveTimer = setTimeout(save, 1200); }
+/* Løpende innholdsfortegnelse: oppdateres ved hver endring */
+function liveToc(){
+  const t = editor.querySelector(".toc"); if (!t) return;
+  const tmp = document.createElement("div"); tmp.innerHTML = buildToc();
+  const cur = [...t.children], fresh = [...tmp.children];
+  const label = el => (el.querySelector(".toc-t") || el).textContent;
+  /* Samme linjer som før: bare sidetallene oppdateres, så linjer som er flyttet til neste side, blir stående der */
+  const same = cur.length === fresh.length && cur.every((c, i) => c.className === fresh[i].className && c.dataset.h === fresh[i].dataset.h && label(c) === label(fresh[i]));
+  if (same) {
+    cur.forEach((c, i) => { const a = c.querySelector(".toc-n"), b = fresh[i].querySelector(".toc-n"); if (a && b && a.textContent !== b.textContent) a.textContent = b.textContent; });
+    return;
+  }
+  t.innerHTML = tmp.innerHTML;
+}
+function afterEdit(typing){
+  convertFonts(); normalizeBlocks(); renumberHeadings(); liveToc(); queueLayout(); markDirty(); updateToolbar();
+  if (typing === true) { clearTimeout(typingTimer); typingTimer = setTimeout(record, 600); } else record();
+}
+editor.addEventListener("input", () => afterEdit(true));
+titleIn.addEventListener("input", () => { if (!currentId) return; docs[currentId].title = titleIn.value; renderSide(); markDirty(); });
+
+async function save(){
+  clearTimeout(saveTimer);
+  if (!currentId || !dirty) return;
+  const html = cleanHtml();
+  const d = docs[currentId];
+  d.html = html; d.title = titleIn.value.trim() || "Uten tittel"; d.updated = Date.now();
+  dirty = false;
+  if (!db) { setStatus("Ikke lagret (lagring utilgjengelig)", true); return; }
+  if (new Blob([html]).size > 250000) { setStatus("For stort til å lagres. Del dokumentet i to.", true); dirty = true; return; }
+  setStatus("Lagrer …");
+  try {
+    await db.doc("docs/" + currentId).set({title:d.title, folder:d.folder, html:d.html, created:d.created || d.updated, updated:d.updated});
+    setStatus("Lagret " + new Date(d.updated).toLocaleTimeString("nb-NO", {hour:"2-digit", minute:"2-digit"}));
+  } catch (e) {
+    dirty = true;
+    setStatus(e && e.code === "quota_exceeded" ? "Lagringen er full" : "Ikke lagret. Prøver igjen …", true);
+    saveTimer = setTimeout(save, 5000);
+  }
+}
+document.addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); dirty = true; save(); } });
+window.addEventListener("beforeunload", () => { if (dirty) save(); });
+
+async function saveFolders(){ if (db) try { await db.doc("meta/settings").set({folders}); } catch(e){ setStatus("Mappen ble ikke lagret", true); } }
+
+/* ---------- Dokumenter ---------- */
+function newId(){ return "d" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+async function createDoc(folder){
+  await save();
+  const id = newId(), now = Date.now();
+  docs[id] = {title:"Uten tittel", folder: folder || folders[0], html:"<p><br></p>", created:now, updated:now};
+  openDoc(id);
+  dirty = true; save();
+  titleIn.focus(); titleIn.select();
+}
+function openDoc(id){
+  if (currentId && dirty) save();
+  currentId = id;
+  const d = docs[id];
+  placeholder.hidden = true; sheet.hidden = false;
+  editor.innerHTML = sanitize(d.html || "<p><br></p>");
+  normalizeBlocks(); ensureStructure(true);
+  const renumbered = renumberHeadings(); liveToc();
+  titleIn.value = d.title || ""; titleIn.disabled = false;
+  folderSel.disabled = false; renderFolderSel(); folderSel.value = d.folder;
+  $("delBtn").disabled = false; $("pdfBtn").disabled = !downloads; $("docxBtn").disabled = !downloads;
+  resetHistory();
+  dirty = false; setStatus(d.updated ? "Sist endret " + fmtDate(d.updated) : "");
+  if (renumbered) markDirty();
+  renderSide(); $("side").classList.remove("open");
+  $("scroll").scrollTop = 0;
+  queueLayout();
+  try { localStorage.setItem("md-last", id); } catch(e){}
+}
+function closeDoc(){
+  currentId = null; sheet.hidden = true; placeholder.hidden = false;
+  titleIn.value = ""; titleIn.disabled = true; folderSel.disabled = true;
+  $("delBtn").disabled = true; $("pdfBtn").disabled = true; $("docxBtn").disabled = true; setStatus("");
+  showEmpty();
+}
+function showEmpty(){
+  const n = Object.keys(docs).length;
+  placeholder.innerHTML = n
+    ? "<h2>Velg et dokument</h2><p>Dokumentene ligger i mappene til venstre. Trykk «+ Nytt dokument» for å starte et nytt.</p>"
+    : "<h2>Ingen dokumenter ennå</h2><p>Trykk «+ Nytt dokument». Dokumentet lagres automatisk mens du skriver, og ligger i mappen du velger.</p>";
+}
+folderSel.addEventListener("change", () => { if (!currentId) return; docs[currentId].folder = folderSel.value; dirty = true; save(); renderSide(); });
+
+/* ---------- Sidepanel ---------- */
+function renderFolderSel(){ folderSel.innerHTML = folders.map(f => '<option>' + esc(f) + "</option>").join(""); }
+/* Nytt navn rett i listen: dobbeltklikk på dokumentet, eller trykk blyanten */
+let renamingId = null, sidePending = false;
+function startRename(id){
+  if (!docs[id] || renamingId) return;
+  const btn = [...$("sideList").querySelectorAll(".doclink")].find(b => b.dataset.id === id); if (!btn) return;
+  renamingId = id;
+  const old = docs[id].title || "Uten tittel";
+  const box = document.createElement("div"); box.className = "renbox";
+  const inp = document.createElement("input"); inp.className = "renin"; inp.value = old; inp.maxLength = 200;
+  inp.setAttribute("aria-label", "Nytt navn på dokumentet");
+  const hint = document.createElement("span"); hint.className = "renhint"; hint.textContent = "Enter lagrer, Esc avbryter";
+  box.append(inp, hint); btn.replaceWith(box);
+  inp.focus(); inp.select();
+  let done = false;
+  const finish = commit => {
+    if (done) return; done = true; renamingId = null;
+    const v = inp.value.trim();
+    if (commit && v && v !== old) applyRename(id, v);
+    renderSide();
+  };
+  inp.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); finish(true); }
+    else if (e.key === "Escape") { e.preventDefault(); finish(false); }
+  });
+  inp.addEventListener("blur", () => finish(true));
+}
+function applyRename(id, v){
+  const d = docs[id]; if (!d) return;
+  d.title = v;
+  if (id === currentId) { titleIn.value = v; dirty = true; save(); return; }
+  d.updated = Date.now();
+  if (!db) return;
+  db.doc("docs/" + id).set({title:v, folder:d.folder, html:d.html, created:d.created || d.updated, updated:d.updated})
+    .then(() => setStatus("Nytt navn er lagret"))
+    .catch(() => setStatus("Det nye navnet ble ikke lagret", true));
+}
+function renderSide(){
+  if (renamingId) { sidePending = true; return; }
+  sidePending = false;
+  const list = $("sideList");
+  const byFolder = {}; folders.forEach(f => byFolder[f] = []);
+  Object.entries(docs).forEach(([id, d]) => { (byFolder[d.folder] || (byFolder[d.folder] = [])).push([id, d]); });
+  let h = "";
+  Object.keys(byFolder).forEach(f => {
+    const items = byFolder[f].sort((a, b) => (a[1].title || "").localeCompare(b[1].title || "", "nb", {numeric:true, sensitivity:"base"}));
+    h += '<div class="folder"><div class="folder-head"><span>' + esc(f) + '</span><span class="count">' + items.length + '</span><span class="grow"></span>' +
+      '<button class="iconbtn" data-new="' + esc(f) + '" title="Nytt dokument i ' + esc(f) + '">+</button>' +
+      (items.length || DEFAULT_FOLDERS.includes(f) ? "" : '<button class="iconbtn" data-delfolder="' + esc(f) + '" title="Slett tom mappe">×</button>') + "</div>";
+    if (!items.length) h += '<div class="empty-folder">Tom</div>';
+    items.forEach(([id, d]) => {
+      h += '<button class="doclink' + (id === currentId ? " active" : "") + '" data-id="' + esc(id) + '" title="Dobbeltklikk for å gi nytt navn"><span class="t">' + esc(d.title || "Uten tittel") + '</span><span class="d">' + fmtDate(d.updated) + '</span><span class="ren" data-ren="' + esc(id) + '" title="Gi nytt navn" aria-label="Gi nytt navn">✎</span></button>';
+    });
+    h += "</div>";
+  });
+  h += '<form class="addfolder" id="addFolder"><input id="folderName" placeholder="Ny mappe" aria-label="Navn på ny mappe" maxlength="40"><button type="submit">Legg til</button></form>';
+  list.innerHTML = h;
+}
+$("sideList").addEventListener("click", e => {
+  const rn = e.target.closest("[data-ren]"); if (rn) { e.preventDefault(); startRename(rn.dataset.ren); return; }
+  const d = e.target.closest("[data-id]"); if (d) { if (d.dataset.id !== currentId) openDoc(d.dataset.id); return; }
+  const n = e.target.closest("[data-new]"); if (n) { createDoc(n.dataset.new); return; }
+  const x = e.target.closest("[data-delfolder]");
+  if (x) { folders = folders.filter(f => f !== x.dataset.delfolder); saveFolders(); renderSide(); renderFolderSel(); }
+});
+$("sideList").addEventListener("dblclick", e => {
+  const d = e.target.closest(".doclink[data-id]"); if (!d) return;
+  e.preventDefault(); startRename(d.dataset.id);
+});
+$("sideList").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = $("folderName").value.trim();
+  if (v && !folders.includes(v)) { folders.push(v); saveFolders(); renderSide(); renderFolderSel(); if (currentId) folderSel.value = docs[currentId].folder; }
+});
+$("newDoc").addEventListener("click", () => createDoc(currentId ? docs[currentId].folder : folders[0]));
+$("menuToggle").addEventListener("click", () => $("side").classList.toggle("open"));
+
+/* ---------- Sletting ---------- */
+function askConfirm(text, action){ $("confirmText").textContent = text; confirmAction = action; $("confirmBar").hidden = false; }
+$("confirmNo").addEventListener("click", () => { $("confirmBar").hidden = true; confirmAction = null; });
+$("confirmYes").addEventListener("click", async () => { $("confirmBar").hidden = true; const a = confirmAction; confirmAction = null; if (a) await a(); });
+$("delBtn").addEventListener("click", () => {
+  if (!currentId) return;
+  const id = currentId, t = docs[id].title || "Uten tittel";
+  askConfirm("Slette «" + t + "» for godt? Dette kan ikke angres.", async () => {
+    dirty = false; clearTimeout(saveTimer);
+    delete docs[id];
+    if (db) try { await db.doc("docs/" + id).delete(); } catch(e){ setStatus("Ble ikke slettet", true); }
+    closeDoc(); renderSide();
+  });
+});
+
+/* ---------- Verktøylinje ---------- */
+$("toolbar").addEventListener("mousedown", e => { if (e.target.closest("button")) e.preventDefault(); });
+$("toolbar").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  if (b.dataset.cmd === "undo") { restore(); undo(); }
+  else if (b.dataset.cmd === "redo") { restore(); redo(); }
+  else if (b.dataset.cmd) exec(b.dataset.cmd);
+  else if (b.dataset.t) tableOp(b.dataset.t);
+});
+$("blockSel").addEventListener("change", e => exec("formatBlock", "<" + e.target.value + ">"));
+$("fontSel").innerHTML = FONTS.map(f => '<option value="' + f[0] + '" style="font-family:' + f[1].replace(/"/g, "'") + '">' + f[0] + "</option>").join("");
+$("sizeSel").innerHTML = SIZES.map(s => '<option value="' + s + '">' + String(s).replace(".", ",") + "</option>").join("");
+$("sizeSel").value = 11;
+$("fontSel").addEventListener("change", e => applyFont(e.target.value));
+$("sizeSel").addEventListener("change", e => applySize(+e.target.value));
+$("lhSel").addEventListener("change", e => applyLineHeight(e.target.value));
+/* Tabellfeltet: ny tabell, eller endre tabellen markøren står i */
+let editTable = null;
+const tableCols = t => Math.max(...[...t.rows].map(r => r.cells.length));
+$("tableBtn").addEventListener("click", () => {
+  stripSpacers();
+  const cell = currentCell();
+  editTable = cell ? cell.closest("table") : null;
+  if (editTable) {
+    $("tPanelTitle").textContent = "Endre tabell";
+    $("tCols").value = tableCols(editTable);
+    $("tRows").value = editTable.rows.length;
+    $("tHead").checked = !!editTable.tHead;
+    newStyle = TSTYLES.find(c => editTable.classList.contains(c)) || "";
+    $("tInsert").textContent = "Oppdater tabellen";
+  } else {
+    $("tPanelTitle").textContent = "Ny tabell";
+    $("tInsert").textContent = "Sett inn";
+  }
+  setPickBtn($("tStyleNewBtn"), newStyle, false);
+  $("tWarn").textContent = "";
+  $("tablePanel").hidden = false; $("tCols").focus(); $("tCols").select();
+});
+$("tCancel").addEventListener("click", () => { $("tablePanel").hidden = true; editTable = null; });
+function lostText(t, R, C){
+  let n = 0;
+  [...t.rows].forEach((r, i) => [...r.cells].forEach((c, k) => { if ((i >= R || k >= C) && c.textContent.trim()) n++; }));
+  return n;
+}
+function warnLoss(){
+  if (!editTable || !editTable.isConnected) { $("tWarn").textContent = ""; return; }
+  const R = Math.max(1, +$("tRows").value || 1), C = Math.max(1, +$("tCols").value || 1);
+  const n = lostText(editTable, R, C);
+  $("tWarn").textContent = n ? n + (n === 1 ? " celle" : " celler") + " med tekst blir slettet. Du kan angre etterpå." : "";
+}
+$("tRows").addEventListener("input", warnLoss);
+$("tCols").addEventListener("input", warnLoss);
+function swapTag(el, tag){ const n = document.createElement(tag); while (el.firstChild) n.appendChild(el.firstChild); [...el.attributes].forEach(a => n.setAttribute(a.name, a.value)); el.replaceWith(n); return n; }
+function updateTable(t, R, C, head, style){
+  flushTyping(); stripSpacers();
+  const prevCols = tableCols(t);
+  /* Overskriftsrad av eller på */
+  if (head && !t.tHead && t.rows.length) {
+    const th = document.createElement("thead"); const first = t.rows[0];
+    t.prepend(th); th.appendChild(first); [...first.cells].forEach(c => swapTag(c, "th"));
+  } else if (!head && t.tHead) {
+    let tb = t.tBodies[0]; if (!tb) { tb = document.createElement("tbody"); t.appendChild(tb); }
+    [...t.tHead.rows].reverse().forEach(r => { tb.prepend(r); [...r.cells].forEach(c => swapTag(c, "td")); });
+    t.tHead.remove();
+  }
+  /* Rader: legges til eller fjernes nederst */
+  while (t.rows.length > R && t.rows.length > 1) t.rows[t.rows.length - 1].remove();
+  while (t.rows.length < R) {
+    let tb = t.tBodies[t.tBodies.length - 1]; if (!tb) { tb = document.createElement("tbody"); t.appendChild(tb); }
+    const tr = document.createElement("tr"); tb.appendChild(tr);
+  }
+  /* Kolonner: legges til eller fjernes til høyre */
+  [...t.rows].forEach(r => {
+    const tag = r.parentNode.tagName === "THEAD" ? "th" : "td";
+    while (r.cells.length > C) r.cells[r.cells.length - 1].remove();
+    while (r.cells.length < C) { const c = document.createElement(tag); c.innerHTML = "<br>"; r.appendChild(c); }
+  });
+  t.querySelectorAll("thead:empty,tbody:empty").forEach(x => x.remove());
+  if (prevCols !== C) clearColWidths(t);
+  TSTYLES.forEach(c => t.classList.remove(c));
+  if (style) t.classList.add(style);
+  if (!t.className) t.removeAttribute("class");
+  editor.focus({preventScroll:true});
+  const keep = savedRange && t.contains(savedRange.startContainer);
+  if (keep) { const sl = getSelection(); sl.removeAllRanges(); sl.addRange(savedRange); } else caretInto(t.querySelector("td,th"), false);
+  afterEdit();
+}
+$("tInsert").addEventListener("click", () => {
+  const r = Math.min(200, Math.max(1, +$("tRows").value || 3)), c = Math.min(12, Math.max(1, +$("tCols").value || 3));
+  $("tablePanel").hidden = true;
+  if (editTable && editTable.isConnected) updateTable(editTable, r, c, $("tHead").checked, newStyle);
+  else insertTable(r, c, $("tHead").checked, newStyle);
+  editTable = null;
+});
+$("tocBtn").addEventListener("click", insertToc);
+function insertBreak(){
+  restore();
+  let n = savedRange ? savedRange.startContainer : null;
+  if (n && n.nodeType === 3) n = n.parentNode;
+  let top = n && editor.contains(n) && n !== editor ? n : null;
+  while (top && top.parentNode !== editor) top = top.parentNode;
+  /* I tabell, liste eller innholdsfortegnelse settes sideskiftet inn etter hele blokken */
+  if (top && (/^(TABLE|UL|OL)$/.test(top.tagName) || top.classList.contains("toc"))) {
+    const pb = document.createElement("div"); pb.className = "pagebreak"; pb.setAttribute("contenteditable", "false");
+    const p = document.createElement("p"); p.innerHTML = "<br>";
+    top.after(pb); pb.after(p);
+    editor.focus({preventScroll:true}); caretInto(p, false); afterEdit();
+    return;
+  }
+  exec("insertHTML", '<div class="pagebreak" contenteditable="false"></div><p><br></p>');
+}
+$("breakBtn").addEventListener("click", insertBreak);
+editor.addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.shiftKey && (e.ctrlKey || e.metaKey)) { e.preventDefault(); insertBreak(); }
+});
+
+try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch(e){}
+
+/* ---------- Innliming ---------- */
+editor.addEventListener("paste", e => {
+  const cd = e.clipboardData; if (!cd) return;
+  e.preventDefault();
+  const html = cd.getData("text/html");
+  if (html) { document.execCommand("insertHTML", false, sanitize(html.replace(/<!--[\s\S]*?-->/g, ""))); }
+  else {
+    const txt = cd.getData("text/plain");
+    const parts = txt.split(/\r?\n/);
+    document.execCommand("insertHTML", false, parts.length > 1 ? parts.map(p => "<p>" + (esc(p) || "<br>") + "</p>").join("") : esc(txt));
+  }
+  afterEdit();
+});
+
+/* ---------- PDF (ekte tekst, klikkbar innholdsfortegnelse med sidetall) ---------- */
+const PDF_FONTS = {
+  Carlito:"carlito", Caladea:"caladea", Arimo:"arimo", Tinos:"tinos", EBGaramond:"eb-garamond", Gelasio:"gelasio"
+};
+function pdfFontFor(family){
+  const f = (family || "").toLowerCase();
+  const first = f.split(",")[0].replace(/['"]/g, "").trim();
+  const pick = s => [["calibri","Carlito"],["carlito","Carlito"],["cambria","Caladea"],["caladea","Caladea"],["arial","Arimo"],["arimo","Arimo"],
+    ["helvetica","Arimo"],["verdana","Arimo"],["times","Tinos"],["tinos","Tinos"],["garamond","EBGaramond"],["georgia","Gelasio"],["gelasio","Gelasio"]]
+    .find(([k]) => s.includes(k));
+  const m = pick(first) || pick(f);
+  return m ? m[1] : "Carlito";
+}
+let pdfReady = null;
+function loadScript(src){
+  return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("load")); document.head.appendChild(s); });
+}
+function b64(buf){
+  const bytes = new Uint8Array(buf); let bin = ""; const step = 0x8000;
+  for (let i = 0; i < bytes.length; i += step) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + step));
+  return btoa(bin);
+}
+function preparePdf(){
+  if (!pdfReady) pdfReady = (async () => {
+    if (!window.pdfMake) await loadScript("https://cdn.jsdelivr.net/npm/pdfmake@0.3.11/build/pdfmake.min.js");
+    const vfs = {}, fonts = {};
+    await Promise.all(Object.entries(PDF_FONTS).map(async ([name, file]) => {
+      fonts[name] = {};
+      await Promise.all([["normal","400-normal"],["bold","700-normal"],["italics","400-italic"],["bolditalics","700-italic"]].map(async ([k, v]) => {
+        const fn = file + "-latin-" + v + ".woff";
+        const r = await fetch("fonts/" + fn); if (!r.ok) throw new Error("font");
+        vfs[fn] = b64(await r.arrayBuffer()); fonts[name][k] = fn;
+      }));
+    }));
+    /* Symboler som avkrysningsruter (☐) finnes ikke i tekstfontene, og hentes fra en egen symbolfont */
+    const rs = await fetch("fonts/symbols-dejavu.ttf"); if (!rs.ok) throw new Error("font");
+    vfs["symbols-dejavu.ttf"] = b64(await rs.arrayBuffer());
+    fonts.Symbols = {normal:"symbols-dejavu.ttf", bold:"symbols-dejavu.ttf", italics:"symbols-dejavu.ttf", bolditalics:"symbols-dejavu.ttf"};
+    pdfMake.addVirtualFileSystem(vfs);
+    pdfMake.addFonts(fonts);
+    if (pdfMake.setUrlAccessPolicy) pdfMake.setUrlAccessPolicy(() => false);
+  })().catch(e => { pdfReady = null; throw e; });
+  return pdfReady;
+}
+const SYMS = "☐☑☒✓✔✗✘→←↑↓↔⇒▪▫■□●○◦★☆♦◆◇►▶✱✳";
+const SYM_SPLIT = new RegExp("([" + SYMS + "]+)", "u"), SYM_ONE = new RegExp("^[" + SYMS + "]+$", "u");
+const PT = px => Math.round(parseFloat(px) * 0.75 * 10) / 10;
+function cssHex(v){
+  const m = /rgba?\(\s*(\d+)[, ]+(\d+)[, ]+(\d+)(?:[, /]+([\d.]+))?/.exec(v || ""); if (!m) return null;
+  if (m[4] !== undefined && parseFloat(m[4]) === 0) return null;
+  return "#" + [m[1], m[2], m[3]].map(x => (+x).toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+/* Markering ligger på et innebygd element (span o.l.) mellom teksten og avsnittet */
+function inlineBg(node, stop){
+  for (let e = node; e && e !== stop && e !== editor; e = e.parentElement) {
+    if (/^(P|H1|H2|H3|LI|TD|TH|DIV|UL|OL|TABLE)$/.test(e.tagName)) break;
+    const c = cssHex(getComputedStyle(e).backgroundColor); if (c) return c;
+  }
+  return null;
+}
+function inlineRuns(el){
+  const runs = [];
+  const walk = n => {
+    if (n.nodeType === 3) {
+      const t = n.textContent.replace(/\s+/g, " "); if (!t) return;
+      const cs = getComputedStyle(n.parentElement);
+      const run = {text:t, fontSize:PT(cs.fontSize), font:pdfFontFor(cs.fontFamily)};
+      /* Fet og kursiv settes alltid uttrykkelig per tekstbit, så PDF-en følger skjermen også når en celle er endret til normal skrift */
+      run.bold = parseInt(cs.fontWeight, 10) >= 600;
+      run.italics = cs.fontStyle === "italic";
+      if ((cs.textDecorationLine || "").includes("underline")) run.decoration = "underline";
+      run.color = cssHex(cs.color) || "#000000";
+      const bgc = inlineBg(n.parentElement, el); if (bgc) run.background = bgc;
+      /* Symboler (☐, ✓, → osv.) skrives med symbolfonten, ellers blir de en rute med spørsmålstegn i PDF-en */
+      t.split(SYM_SPLIT).forEach(part => { if (part) runs.push({...run, text:part, ...(SYM_ONE.test(part) ? {font:"Symbols"} : {})}); });
+    } else if (n.nodeType === 1) {
+      if (n.tagName === "BR") { runs.push({text:"\n"}); return; }
+      if (/^(UL|OL|TABLE)$/.test(n.tagName)) return;
+      n.childNodes.forEach(walk);
+    }
+  };
+  el.childNodes.forEach(walk);
+  while (runs.length && runs[runs.length - 1].text === "\n") runs.pop();
+  if (runs.length) { runs[0].text = runs[0].text.replace(/^ /, ""); const l = runs[runs.length - 1]; if (l.text !== "\n") l.text = l.text.replace(/ $/, ""); }
+  return runs.length ? runs : [{text:" "}];
+}
+const PDF_NAT = {Carlito:1.2207, Caladea:1.15, Arimo:1.1499, Tinos:1.1499, EBGaramond:1.305, Gelasio:1.2695};
+function blockProps(el){
+  const cs = getComputedStyle(el);
+  const fs = parseFloat(cs.fontSize);
+  const lh = cs.lineHeight === "normal" ? 1.2 : parseFloat(cs.lineHeight) / fs;
+  const al = cs.textAlign === "center" ? "center" : cs.textAlign === "right" || cs.textAlign === "end" ? "right" : cs.textAlign === "justify" ? "justify" : "left";
+  /* PDF-linjehøyde regnes ut fra fontens egen høyde, så linjene får samme avstand som på skjermen */
+  const nat = PDF_NAT[pdfFontFor(cs.fontFamily)] || 1.2;
+  return {lineHeight:Math.max(0.6, Math.round(lh / nat * 1000) / 1000), alignment:al};
+}
+/* ---- PDF-innhold bygges fra skjermen: samme sideskift, marger, linjeavstand og kolonnebredder ---- */
+const PX = v => Math.round(parseFloat(v || 0) * 0.75 * 100) / 100;
+function cellBlocks(c){
+  /* Celleinnhold: tekst, eventuelt med lister inni */
+  const lists = [...c.children].filter(x => x.tagName === "UL" || x.tagName === "OL");
+  const main = {text:inlineRuns(c), ...blockProps(c)};
+  return lists.length ? {stack:[main, ...lists.map(l => listStack(l, 0))]} : main;
+}
+function liNode(li, idx, ordered, indent){
+  const cs = getComputedStyle(li);
+  const sub = [...li.children].filter(c => c.tagName === "UL" || c.tagName === "OL");
+  const marker = ordered ? (idx + 1) + "." : "•";
+  const row = {columns:[
+      {width:22, text:marker, alignment:"right", margin:[0, 0, ordered ? 3 : 6, 0], fontSize:PX(cs.fontSize), font:pdfFontFor(cs.fontFamily), ...blockProps(li)},
+      {width:"*", text:inlineRuns(li), ...blockProps(li)}
+    ], columnGap:0};
+  const body = sub.length ? {stack:[row, ...sub.map(s => listStack(s, 22))]} : row;
+  return indent ? {stack:[body], margin:[indent, 0, 0, 0]} : body;
+}
+function listStack(list, indent){
+  const ordered = list.tagName === "OL";
+  return {stack:[...list.children].filter(li => li.tagName === "LI").map((li, i) => {
+    const n = liNode(li, i, ordered, 0); const cs = getComputedStyle(li);
+    return {stack:[n], margin:[0, i ? PX(cs.marginTop) : 0, 0, PX(cs.marginBottom)]};
+  }), margin:[indent, 0, 0, 0]};
+}
+function tablePart(table, rows, rowOffset, first, lastPart){
+  const st = TSTYLES.find(c => table.classList.contains(c)) || "";
+  const allRows = [...table.rows].filter(r => !r.classList.contains("pgspace"));
+  const cols = Math.max(...allRows.map(r => [...r.cells].reduce((s, c) => s + (c.colSpan || 1), 0)));
+  /* Kolonnebredder hentes fra skjermen */
+  const ref = allRows.find(r => r.cells.length === cols && [...r.cells].every(c => (c.colSpan || 1) === 1));
+  const widths = ref ? [...ref.cells].map(c => Math.max(4, PX(c.offsetWidth + "px") - 12 - 0.75)) : Array(cols).fill("*");
+  const head = table.tHead ? table.tHead.rows.length : 0;
+  const body = rows.map(r => {
+    const out = [];
+    [...r.cells].forEach(c => {
+      const cell = cellBlocks(c);
+      const span = Math.min(c.colSpan || 1, cols - out.length);
+      if (span > 1) cell.colSpan = span;
+      out.push(cell); for (let i = 1; i < span; i++) out.push({});
+    });
+    while (out.length < cols) out.push({text:""});
+    return out;
+  });
+  const g = r => r + rowOffset;               /* radnummer i hele tabellen */
+  const n = body.length;
+  const L = {
+    "":          {h:() => 0.75, v:() => 0.75, hc:"#000", fill:() => null},
+    "t-lines":   {h:i => (i === 0 || (head && g(i) === head)) ? 0.75 : (i === n ? (lastPart ? 0.75 : 0.5) : 0.5), v:() => 0, hc:"#000", fill:() => null},
+    "t-greyhead":{h:() => 0.75, v:() => 0.75, hc:"#000", fill:r => g(r) < head ? "#D9D9D9" : null},
+    "t-zebra":   {h:() => 0.5, v:() => 0.5, hc:"#999", fill:r => (g(r) >= head && (g(r) - head) % 2 === 1) ? "#F2F2F2" : null},
+    "t-plain":   {h:i => (head && g(i) === head && i > 0) ? 0.75 : 0, v:() => 0, hc:"#000", fill:() => null},
+    "t-dark":    {h:() => 0.75, v:() => 0.75, hc:"#000", fill:r => g(r) < head ? "#000000" : null}
+  }[st];
+  if (st === "t-dark") body.forEach((row, r) => { if (g(r) < head) row.forEach(c => { if (c.text !== undefined) c.color = "#FFFFFF"; }); });
+  return {table:{headerRows:0, dontBreakRows:true, widths, body},
+    layout:{hLineWidth:L.h, vLineWidth:L.v, hLineColor:() => L.hc, vLineColor:() => L.hc, fillColor:r => L.fill(r),
+      paddingLeft:() => 6, paddingRight:() => 6, paddingTop:() => 3, paddingBottom:() => 3}};
+}
+/* Én tabellrad som egen del, plassert der raden står på skjermen. Linjer tegnes over hver rad og under siste rad på siden. */
+function tableRowNode(table, row, gi, firstOnPage, lastOnPage){
+  const st = TSTYLES.find(c => table.classList.contains(c)) || "";
+  const allRows = [...table.rows].filter(r => !r.classList.contains("pgspace"));
+  const N = allRows.length;
+  const cols = Math.max(...allRows.map(r => [...r.cells].reduce((s, c) => s + (c.colSpan || 1), 0)));
+  const ref = allRows.find(r => r.cells.length === cols && [...r.cells].every(c => (c.colSpan || 1) === 1));
+  const widths = ref ? [...ref.cells].map(c => Math.max(4, PX(c.offsetWidth + "px") - 12 - 0.75)) : Array(cols).fill("*");
+  const head = table.tHead ? table.tHead.rows.length : 0;
+  const out = [];
+  [...row.cells].forEach(c => {
+    const cell = cellBlocks(c);
+    const span = Math.min(c.colSpan || 1, cols - out.length);
+    if (span > 1) cell.colSpan = span;
+    out.push(cell); for (let i = 1; i < span; i++) out.push({});
+  });
+  while (out.length < cols) out.push({text:""});
+  const lineW = (g, pageTop) => ({
+    "":          .75,
+    "t-lines":   (g === 0 || (head && g === head) || g === N || pageTop) ? .75 : .5,
+    "t-greyhead":.75,
+    "t-zebra":   .5,
+    "t-plain":   (head && g === head && g > 0) ? .75 : 0,
+    "t-dark":    .75
+  })[st];
+  const vW = {"":.75, "t-lines":0, "t-greyhead":.75, "t-zebra":.5, "t-plain":0, "t-dark":.75}[st];
+  const col = st === "t-zebra" ? "#999" : "#000";
+  const fill = (gi < head) ? (st === "t-greyhead" ? "#D9D9D9" : st === "t-dark" ? "#000000" : null)
+             : (st === "t-zebra" && (gi - head) % 2 === 1 ? "#F2F2F2" : null);
+  if (st === "t-dark" && gi < head) out.forEach(c => { if (c.text !== undefined) c.color = "#FFFFFF"; });
+  return {table:{widths, body:[out]},
+    layout:{hLineWidth:i => i === 0 ? lineW(gi, firstOnPage && gi > 0) : (lastOnPage ? lineW(gi + 1, false) : 0),
+      vLineWidth:() => vW, hLineColor:() => col, vLineColor:() => col, fillColor:() => fill,
+      paddingLeft:() => 6, paddingRight:() => 6, paddingTop:() => 3, paddingBottom:() => 3}};
+}
+function tocLineNode(line, heads){
+  const cs = getComputedStyle(line);
+  const t = line.querySelector(".toc-t"), num = line.querySelector(".toc-n"), dots = line.querySelector(".toc-dots");
+  const base = {fontSize:PX(cs.fontSize), bold:parseInt(cs.fontWeight, 10) >= 600, font:pdfFontFor(cs.fontFamily), ...blockProps(line)};
+  const dest = "h" + line.dataset.h;
+  const dw = dots ? Math.max(0, PX(dots.offsetWidth + "px") - 2) : 0;
+  const y = base.fontSize * 1.08;
+  return {columns:[
+    {width:"auto", text:t ? t.textContent : line.textContent, linkToDestination:dest, ...base},
+    {width:dw, canvas:[{type:"line", x1:0, y1:y, x2:dw, y2:y, lineWidth:0.6, dash:{length:0.6, space:1.6}}]},
+    {width:"auto", text:num ? num.textContent : "", linkToDestination:dest, ...base}
+  ], columnGap:PX(dots ? getComputedStyle(dots).marginLeft : "0px")};
+}
+function buildPdfContent(){
+  normalizeBlocks(); relayout();
+  if (!unitPage.size) return buildPdfFlow();
+  /* Hver del plasseres på samme side og samme høyde som på skjermen */
+  const heads = tocHeads(); const headId = new Map(heads.map((h, i) => [h, "h" + i]));
+  const eLeft = editor.getBoundingClientRect().left;
+  const X = el => 72 + PX(((el.getBoundingClientRect().left - eLeft) / curZoom()) + "px");
+  const items = []; let maxPage = 1;
+  const place = (node, el, x) => {
+    const pg = unitPage.get(el); if (pg === undefined) return;
+    maxPage = Math.max(maxPage, pg);
+    node.absolutePosition = {x, y:72 + PX(unitY.get(el) + "px")};
+    items.push([pg, node]);
+  };
+  const textStyle = c => { const cs = getComputedStyle(c); return {fontSize:PX(cs.fontSize), bold:parseInt(cs.fontWeight, 10) >= 600, italics:cs.fontStyle === "italic", font:pdfFontFor(cs.fontFamily), ...blockProps(c)}; };
+  [...editor.children].forEach(el => {
+    const tag = el.tagName;
+    if (el.classList.contains("pagebreak")) return;
+    if (el.classList.contains("toc")) {
+      [...el.children].forEach(c => {
+        if (c.dataset.h !== undefined) place(tocLineNode(c, heads), c, X(c));
+        else place({text:c.textContent, ...textStyle(c)}, c, X(c));
+      });
+      return;
+    }
+    if (/^H[1-3]$/.test(tag)) {
+      if (!el.textContent.trim()) return;
+      const node = {text:el.textContent.replace(/\s+/g, " ").trim(), ...textStyle(el), bold:true};
+      if (headId.has(el)) node.id = headId.get(el);
+      place(node, el, X(el)); return;
+    }
+    if (tag === "UL" || tag === "OL") {
+      [...el.children].filter(li => li.tagName === "LI").forEach((li, i) => place(liNode(li, i, tag === "OL", 0), li, X(li) - 22));
+      return;
+    }
+    if (tag === "TABLE") {
+      const rows = [...el.rows].filter(r => !r.classList.contains("pgspace"));
+      if (!rows.length) return;
+      rows.forEach((r, i) => {
+        const firstOnPage = i === 0 || unitPage.get(rows[i - 1]) !== unitPage.get(r);
+        const lastOnPage = i === rows.length - 1 || unitPage.get(rows[i + 1]) !== unitPage.get(r);
+        place(tableRowNode(el, r, i, firstOnPage, lastOnPage), r, X(el));
+      });
+      return;
+    }
+    if (!el.textContent.trim()) return;
+    if (tag === "DIV" && el.children.length && ![...el.children].every(c => /^(SPAN|B|I|U|STRONG|EM|BR)$/.test(c.tagName))) {
+      [...el.children].forEach(c => { if (c.textContent.trim()) place({text:inlineRuns(c), ...blockProps(c)}, el, X(c)); });
+      return;
+    }
+    place({text:inlineRuns(el), ...blockProps(el)}, el, X(el));
+  });
+  const out = [];
+  for (let pg = 1; pg <= maxPage; pg++) {
+    out.push({text:"", pageBreak:pg > 1 ? "before" : undefined});
+    items.filter(([p]) => p === pg).forEach(([, n]) => out.push(n));
+  }
+  return out;
+}
+/* Reserve for smal skjerm (mobil), der skjermen ikke har faste sider: PDF-en deler sidene selv */
+function buildPdfFlow(){
+  const heads = tocHeads(); const headId = new Map(heads.map((h, i) => [h, "h" + i]));
+  const out = []; let breakNext = false;
+  const add = n => { if (breakNext) { n.pageBreak = "before"; breakNext = false; } out.push(n); };
+  [...editor.children].forEach(el => {
+    const tag = el.tagName, cs = getComputedStyle(el), m = [0, PX(cs.marginTop), 0, PX(cs.marginBottom)];
+    if (el.classList.contains("pagebreak")) { breakNext = true; return; }
+    if (el.classList.contains("toc")) { [...el.children].forEach(c => add(c.dataset.h !== undefined ? tocLineNode(c, heads) : {text:c.textContent, bold:true, fontSize:PX(getComputedStyle(c).fontSize)})); return; }
+    if (/^H[1-3]$/.test(tag)) { if (!el.textContent.trim()) return; const n = {text:el.textContent.trim(), fontSize:PX(cs.fontSize), bold:true, margin:m, ...blockProps(el)}; if (headId.has(el)) n.id = headId.get(el); add(n); return; }
+    if (tag === "UL" || tag === "OL") { add({...listStack(el, 0), margin:m}); return; }
+    if (tag === "TABLE") { const rows = [...el.rows].filter(r => !r.classList.contains("pgspace")); if (rows.length) add({...tablePart(el, rows, 0, true, true), margin:m}); return; }
+    add({text:inlineRuns(el), ...blockProps(el), margin:m});
+  });
+  return out;
+}
+/* Én knapp: PDF-en lages med en gang, med sidene slik de er i dokumentet */
+$("pdfBtn").addEventListener("click", async () => {
+  if (!currentId || !downloads) return;
+  const btn = $("pdfBtn"); if (btn.dataset.busy) return;
+  btn.dataset.busy = "1"; btn.disabled = true;
+  $("tablePanel").hidden = true;
+  setStatus("Lager PDF …");
+  try {
+    await preparePdf();
+    const title = titleIn.value.trim() || "Uten tittel";
+    /* Ingen ekstra forside: PDF-en inneholder bare dokumentets egne sider */
+    const content = buildPdfContent();
+    const dd = {
+      /* Innholdet plasseres etter skjermen. Nedre marg er litt mindre enn på skjermen, så små avrundinger aldri flytter en linje til neste side. */
+      pageSize:"A4", pageMargins:[72, 72, 72, unitPage.size ? 56 : 72],
+      info:{title, creator:"Mine dokumenter"},
+      defaultStyle:{font:"Carlito", fontSize:11, color:"#000"},
+      content,
+      footer: page => ({text:String(page), alignment:"right", fontSize:9, margin:[0, unitPage.size ? 20 : 36, 72, 0]})
+    };
+    const blob = await pdfMake.createPdf(dd).getBlob();
+    const name = title.replace(/[\\/:*?"<>|]+/g, "-").slice(0, 120) + ".pdf";
+    setStatus("Bekreft lagringen i vinduet som åpnes.");
+    await downloads.save({filename:name, data:blob});
+    setStatus("PDF lagret");
+  } catch (e) {
+    setStatus(e && e.code === "declined" ? "Lagringen ble avbrutt" :
+      e && (e.message === "load" || e.message === "font") ? "Fikk ikke lastet PDF-verktøyet. Sjekk nettet og prøv igjen." :
+      "Fikk ikke laget PDF. Be Claude lage den i chatten.", true);
+    console.error(e);
+  } finally {
+    delete btn.dataset.busy; btn.disabled = !currentId || !downloads;
+  }
+});
+
+/* ---------- Word (.docx): lages i nettleseren fra dokumentet ----------
+   Overskrifter får Words egne overskriftsstiler (navigasjonsrute og innholdsfortegnelse virker),
+   lister blir ekte Word-lister, tabeller beholder stil og kolonnebredder, sideskift og sidetall følger med.
+   Innholdsfortegnelsen er et Word-felt med klikkbare linjer; sidetallene kan oppdateres i Word (høyreklikk > Oppdater felt). */
+const W_TEXT = 9026;                                   /* skrivebredde på A4 med 2,54 cm marger, i twips */
+const W_FONTS = [["calibri","Calibri"],["carlito","Calibri"],["cambria","Cambria"],["caladea","Cambria"],["arial","Arial"],["arimo","Arial"],
+  ["helvetica","Arial"],["verdana","Verdana"],["times","Times New Roman"],["tinos","Times New Roman"],["garamond","Garamond"],["georgia","Georgia"],["gelasio","Georgia"]];
+function wFont(family){
+  const f = (family || "").toLowerCase(), first = f.split(",")[0].replace(/['"]/g, "").trim();
+  const m = W_FONTS.find(([k]) => first.includes(k)) || W_FONTS.find(([k]) => f.includes(k));
+  return m ? m[1] : "Calibri";
+}
+const wx = s => String(s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g, "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const TW = pt => Math.round(pt * 20);                  /* punkt til twips */
+function wRunProps(cs, bg){
+  const font = wx(wFont(cs.fontFamily)), sz = Math.max(2, Math.round(parseFloat(cs.fontSize) * 0.75 * 2));
+  let p = '<w:rFonts w:ascii="' + font + '" w:hAnsi="' + font + '" w:cs="' + font + '"/>';
+  if (parseInt(cs.fontWeight, 10) >= 600) p += "<w:b/><w:bCs/>";
+  if (cs.fontStyle === "italic") p += "<w:i/><w:iCs/>";
+  const col = cssHex(cs.color); if (col && col !== "#000000") p += '<w:color w:val="' + col.slice(1) + '"/>';
+  p += '<w:sz w:val="' + sz + '"/><w:szCs w:val="' + sz + '"/>';
+  if ((cs.textDecorationLine || "").includes("underline")) p += '<w:u w:val="single"/>';
+  if (bg) p += '<w:shd w:val="clear" w:color="auto" w:fill="' + bg.slice(1) + '"/>';
+  return "<w:rPr>" + p + "</w:rPr>";
+}
+/* Tekstbitene i en blokk, med fet, kursiv, understreking, farge, markering, font og størrelse */
+function wRuns(nodes, stop){
+  const runs = [];
+  const walk = n => {
+    if (n.nodeType === 3) {
+      const t = n.textContent.replace(/\s+/g, " "); if (!t) return;
+      runs.push({t, pr:wRunProps(getComputedStyle(n.parentElement), inlineBg(n.parentElement, stop))});
+    } else if (n.nodeType === 1) {
+      if (n.tagName === "BR") { runs.push({br:true}); return; }
+      if (/^(UL|OL|TABLE)$/.test(n.tagName) || n.classList.contains("pagebreak")) return;
+      n.childNodes.forEach(walk);
+    }
+  };
+  nodes.forEach(walk);
+  while (runs.length && runs[runs.length - 1].br) runs.pop();
+  while (runs.length && runs[0].br) runs.shift();
+  const txt = runs.filter(r => !r.br);
+  if (txt.length) { txt[0].t = txt[0].t.replace(/^ /, ""); const l = txt[txt.length - 1]; l.t = l.t.replace(/ $/, ""); }
+  return runs.map(r => r.br ? "<w:r><w:br/></w:r>" : r.t ? '<w:r>' + r.pr + '<w:t xml:space="preserve">' + wx(r.t) + "</w:t></w:r>" : "").join("");
+}
+/* Avsnittsinnstillinger: justering, linjeavstand og avstand før og etter */
+function wPPr(el, o){
+  const cs = getComputedStyle(el);
+  const fs = parseFloat(cs.fontSize);
+  const lh = cs.lineHeight === "normal" ? 1.2 : parseFloat(cs.lineHeight) / fs;
+  const nat = PDF_NAT[pdfFontFor(cs.fontFamily)] || 1.22;
+  const al = cs.textAlign === "center" ? "center" : (cs.textAlign === "right" || cs.textAlign === "end") ? "right" : cs.textAlign === "justify" ? "both" : "left";
+  let p = "";
+  if (o.style) p += '<w:pStyle w:val="' + o.style + '"/>';
+  if (o.keepNext) p += "<w:keepNext/>";
+  if (o.breakBefore) p += "<w:pageBreakBefore/>";
+  if (o.num) p += '<w:numPr><w:ilvl w:val="' + o.num[0] + '"/><w:numId w:val="' + o.num[1] + '"/></w:numPr>';
+  p += '<w:spacing w:before="' + TW(o.before || 0) + '" w:after="' + TW(o.after || 0) + '" w:line="' + Math.max(120, Math.round(lh / nat * 240)) + '" w:lineRule="auto"/>';
+  if (o.ind) p += o.ind;
+  if (al !== "left") p += '<w:jc w:val="' + al + '"/>';
+  /* Avsnittsmerket får samme font og størrelse, så tomme linjer blir like høye som på skjermen */
+  p += wRunProps(cs, null);
+  return "<w:pPr>" + p + "</w:pPr>";
+}
+const W_SPACE = {P:[0, 8], H1:[24, 6], H2:[18, 4], H3:[14, 4], DIV:[0, 8]};
+function wDocx(){
+  normalizeBlocks(); relayout(); markCells(null);
+  const heads = tocHeads(), headIdx = new Map(heads.map((h, i) => [h, i]));
+  let body = "", breakNext = false, first = true, nums = [], bmId = 0, afterTable = false;
+  const numFor = ordered => { if (!ordered) return 1; nums.push(nums.length + 2); return nums[nums.length - 1]; };
+  const para = (el, runs, o) => {
+    const opt = {...o};
+    if (breakNext) { opt.breakBefore = true; breakNext = false; opt.before = 0; }
+    if (first) { opt.before = 0; first = false; }
+    if (afterTable) { opt.before = Math.max(opt.before || 0, 10); afterTable = false; }   /* 10 pt luft under en tabell, som på skjermen */
+    body += "<w:p>" + wPPr(el, opt) + runs + "</w:p>";
+  };
+  const list = (l, depth) => {
+    const id = numFor(l.tagName === "OL");
+    const items = [...l.children].filter(li => li.tagName === "LI");
+    items.forEach((li, i) => {
+      const last = i === items.length - 1 && depth === 0;
+      para(li, wRuns([...li.childNodes], li), {num:[Math.min(depth, 8), id], after:last ? 8 : 2});
+      [...li.children].filter(c => c.tagName === "UL" || c.tagName === "OL").forEach(s => list(s, depth + 1));
+    });
+  };
+  const table = t => {
+    if (breakNext) { body += '<w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr><w:r><w:br w:type="page"/></w:r></w:p>'; breakNext = false; }
+    first = false;
+    const st = TSTYLES.find(c => t.classList.contains(c)) || "";
+    const rows = [...t.rows].filter(r => !r.classList.contains("pgspace"));
+    if (!rows.length) return;
+    const cols = Math.max(...rows.map(r => [...r.cells].reduce((s, c) => s + (c.colSpan || 1), 0)));
+    const ref = rows.find(r => r.cells.length === cols && [...r.cells].every(c => (c.colSpan || 1) === 1));
+    let grid = ref ? [...ref.cells].map(c => c.getBoundingClientRect().width) : Array(cols).fill(1);
+    const sum = grid.reduce((a, b) => a + b, 0) || 1;
+    grid = grid.map(w => Math.max(200, Math.round(w / sum * W_TEXT)));
+    const line = (sz, col) => sz ? 'w:val="single" w:sz="' + sz + '" w:space="0" w:color="' + col + '"' : 'w:val="nil"';
+    const B = {
+      "":          {t:6, l:6, b:6, r:6, h:6, v:6, c:"000000"},
+      "t-lines":   {t:6, l:0, b:6, r:0, h:4, v:0, c:"000000"},
+      "t-greyhead":{t:6, l:6, b:6, r:6, h:6, v:6, c:"000000"},
+      "t-zebra":   {t:4, l:4, b:4, r:4, h:4, v:4, c:"999999"},
+      "t-plain":   {t:0, l:0, b:0, r:0, h:0, v:0, c:"000000"},
+      "t-dark":    {t:6, l:6, b:6, r:6, h:6, v:6, c:"000000"}
+    }[st];
+    let x = '<w:tbl><w:tblPr><w:tblW w:w="' + W_TEXT + '" w:type="dxa"/>' +
+      '<w:tblBorders><w:top ' + line(B.t, B.c) + '/><w:left ' + line(B.l, B.c) + '/><w:bottom ' + line(B.b, B.c) + '/><w:right ' + line(B.r, B.c) + '/>' +
+      '<w:insideH ' + line(B.h, B.c) + '/><w:insideV ' + line(B.v, B.c) + '/></w:tblBorders>' +
+      '<w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar>' +
+      '<w:tblLook w:val="0000"/></w:tblPr><w:tblGrid>' + grid.map(w => '<w:gridCol w:w="' + w + '"/>').join("") + "</w:tblGrid>";
+    const headRows = t.tHead ? t.tHead.rows.length : 0;
+    rows.forEach((r, ri) => {
+      const isHead = r.parentNode.tagName === "THEAD";
+      x += "<w:tr><w:trPr><w:cantSplit/>" + (isHead ? "<w:tblHeader/>" : "") + "</w:trPr>";
+      let ci = 0;
+      [...r.cells].forEach(c => {
+        const span = Math.min(c.colSpan || 1, cols - ci);
+        const w = grid.slice(ci, ci + span).reduce((a, b) => a + b, 0); ci += span;
+        let tc = '<w:tcW w:w="' + w + '" w:type="dxa"/>' + (span > 1 ? '<w:gridSpan w:val="' + span + '"/>' : "");
+        /* Strek under overskriftsraden for stilene uten rammer */
+        if ((st === "t-plain" || st === "t-lines") && isHead && ri === headRows - 1) tc += '<w:tcBorders><w:bottom ' + line(6, "000000") + '/></w:tcBorders>';
+        const fill = cssHex(getComputedStyle(c).backgroundColor);
+        if (fill && fill !== "#FFFFFF") tc += '<w:shd w:val="clear" w:color="auto" w:fill="' + fill.slice(1) + '"/>';
+        x += "<w:tc><w:tcPr>" + tc + "</w:tcPr>" + cellParas(c) + "</w:tc>";
+      });
+      while (ci < cols) { x += '<w:tc><w:tcPr><w:tcW w:w="' + grid[ci] + '" w:type="dxa"/></w:tcPr><w:p/></w:tc>'; ci++; }
+      x += "</w:tr>";
+    });
+    body += x + "</w:tbl>";
+    afterTable = true;
+    /* To tabeller rett etter hverandre holdes adskilt med et lite avsnitt */
+    if (t.nextElementSibling && t.nextElementSibling.tagName === "TABLE")
+      body += '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:rPr><w:sz w:val="4"/></w:rPr></w:pPr></w:p>';
+  };
+  /* Innhold i en tabellcelle: tekst, avsnitt og lister */
+  const cellParas = c => {
+    const saved = body; body = ""; const keepFirst = first, keepBreak = breakNext, keepAfter = afterTable; first = false; breakNext = false; afterTable = false;
+    const BLK = /^(P|H1|H2|H3|UL|OL|DIV|TABLE)$/;
+    if (![...c.children].some(k => BLK.test(k.tagName))) para(c, wRuns([...c.childNodes], c), {after:0});
+    else {
+      let inl = [];
+      const flush = () => { if (inl.length && inl.some(n => n.nodeType === 1 || n.textContent.trim())) para(c, wRuns(inl, c), {after:0}); inl = []; };
+      [...c.childNodes].forEach(n => {
+        if (n.nodeType === 1 && (n.tagName === "UL" || n.tagName === "OL")) { flush(); list(n, 0); }
+        else if (n.nodeType === 1 && BLK.test(n.tagName)) { flush(); para(n, wRuns([...n.childNodes], n), {after:0}); }
+        else inl.push(n);
+      });
+      flush();
+    }
+    if (!body) body = "<w:p/>";
+    const out = body.replace(/w:after="160"/g, 'w:after="0"');
+    body = saved; first = keepFirst; breakNext = keepBreak; afterTable = keepAfter;
+    return out;
+  };
+  const heading = el => {
+    if (!el.textContent.trim()) return;
+    const lvl = el.tagName[1], [b, a] = W_SPACE[el.tagName];
+    const i = headIdx.get(el);
+    const runs = wRuns([...el.childNodes], el);
+    const mark = i === undefined ? runs : '<w:bookmarkStart w:id="' + (bmId++) + '" w:name="_Toc_md' + i + '"/>' + runs + '<w:bookmarkEnd w:id="' + (bmId - 1) + '"/>';
+    para(el, mark, {style:"Heading" + lvl, keepNext:true, before:b, after:a});
+  };
+  const toc = el => {
+    const title = el.querySelector(".toc-title");
+    if (title) para(title, wRuns([...title.childNodes], title), {before:0, after:8});
+    const lines = [...el.children].filter(c => c.dataset.h !== undefined);
+    const fBegin = '<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText xml:space="preserve"> TOC \\o "1-3" \\h \\z \\u </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r>';
+    const fEnd = '<w:r><w:fldChar w:fldCharType="end"/></w:r>';
+    if (!lines.length) { para(el, fBegin + fEnd, {after:3}); return; }
+    lines.forEach((ln, k) => {
+      const lvl = (ln.className.match(/toc-l(\d)/) || [0, 1])[1];
+      const t = ln.querySelector(".toc-t"), n = ln.querySelector(".toc-n");
+      const cs = getComputedStyle(ln);
+      const pr = wRunProps(cs, null);
+      const link = '<w:hyperlink w:anchor="_Toc_md' + ln.dataset.h + '" w:history="1">' +
+        "<w:r>" + pr + '<w:t xml:space="preserve">' + wx(t ? t.textContent : ln.textContent) + "</w:t></w:r>" +
+        "<w:r>" + pr + "<w:tab/></w:r><w:r>" + pr + "<w:t>" + wx(n ? n.textContent : "") + "</w:t></w:r></w:hyperlink>";
+      para(ln, (k === 0 ? fBegin : "") + link + (k === lines.length - 1 ? fEnd : ""), {style:"TOC" + lvl, after:3});
+    });
+  };
+  [...editor.children].forEach(el => {
+    const tag = el.tagName;
+    if (el.classList.contains("pagebreak")) { breakNext = true; return; }
+    if (el.classList.contains("toc")) { toc(el); return; }
+    if (/^H[1-3]$/.test(tag)) { heading(el); return; }
+    if (tag === "UL" || tag === "OL") { list(el, 0); return; }
+    if (tag === "TABLE") { table(el); return; }
+    const [b, a] = W_SPACE[tag] || [0, 8];
+    para(el, wRuns([...el.childNodes], el), {before:b, after:a});
+  });
+  if (breakNext) body += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+  return {body, nums};
+}
+function wNumbering(nums){
+  const bullets = ["•", "o", "▪"];
+  const lvls = (ordered) => Array.from({length:9}, (_, l) =>
+    '<w:lvl w:ilvl="' + l + '"><w:start w:val="1"/><w:numFmt w:val="' + (ordered ? (l % 3 === 1 ? "lowerLetter" : l % 3 === 2 ? "lowerRoman" : "decimal") : "bullet") + '"/>' +
+    '<w:lvlText w:val="' + (ordered ? "%" + (l + 1) + "." : bullets[l % 3]) + '"/><w:lvlJc w:val="left"/>' +
+    '<w:pPr><w:ind w:left="' + (440 * (l + 1)) + '" w:hanging="' + (ordered ? 340 : 300) + '"/></w:pPr>' +
+    (ordered ? "" : '<w:rPr><w:rFonts w:ascii="' + (l % 3 === 1 ? "Courier New" : "Calibri") + '" w:hAnsi="' + (l % 3 === 1 ? "Courier New" : "Calibri") + '"/></w:rPr>') + "</w:lvl>").join("");
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+    '<w:abstractNum w:abstractNumId="0"><w:multiLevelType w:val="hybridMultilevel"/>' + lvls(false) + "</w:abstractNum>" +
+    '<w:abstractNum w:abstractNumId="1"><w:multiLevelType w:val="hybridMultilevel"/>' + lvls(true) + "</w:abstractNum>" +
+    '<w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>' +
+    nums.map(id => '<w:num w:numId="' + id + '"><w:abstractNumId w:val="1"/>' +
+      Array.from({length:9}, (_, l) => '<w:lvlOverride w:ilvl="' + l + '"><w:startOverride w:val="1"/></w:lvlOverride>').join("") + "</w:num>").join("") +
+    "</w:numbering>";
+}
+function wStyles(){
+  const h = (id, name, sz, before, after, lvl) => '<w:style w:type="paragraph" w:styleId="' + id + '"><w:name w:val="' + name + '"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:uiPriority w:val="9"/><w:qFormat/>' +
+    '<w:pPr><w:keepNext/><w:keepLines/><w:spacing w:before="' + TW(before) + '" w:after="' + TW(after) + '"/><w:outlineLvl w:val="' + lvl + '"/></w:pPr>' +
+    '<w:rPr><w:b/><w:bCs/><w:color w:val="000000"/><w:sz w:val="' + sz + '"/><w:szCs w:val="' + sz + '"/></w:rPr></w:style>';
+  const toc = (n, ind, bold) => '<w:style w:type="paragraph" w:styleId="TOC' + n + '"><w:name w:val="toc ' + n + '"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:uiPriority w:val="39"/>' +
+    '<w:pPr><w:tabs><w:tab w:val="right" w:leader="dot" w:pos="' + W_TEXT + '"/></w:tabs><w:spacing w:after="60"/><w:ind w:left="' + ind + '"/></w:pPr>' + (bold ? "<w:rPr><w:b/><w:bCs/></w:rPr>" : "") + "</w:style>";
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' +
+    '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="nb-NO" w:eastAsia="en-US" w:bidi="ar-SA"/></w:rPr></w:rPrDefault>' +
+    '<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>' +
+    '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>' +
+    h("Heading1", "heading 1", 32, 24, 6, 0) + h("Heading2", "heading 2", 26, 18, 4, 1) + h("Heading3", "heading 3", 24, 14, 4, 2) +
+    '<w:style w:type="paragraph" w:styleId="TOCHeading"><w:name w:val="TOC Heading"/><w:basedOn w:val="Heading1"/><w:next w:val="Normal"/><w:uiPriority w:val="39"/><w:pPr><w:outlineLvl w:val="9"/></w:pPr></w:style>' +
+    toc(1, 0, true) + toc(2, 280, false) + toc(3, 560, false) +
+    '<w:style w:type="paragraph" w:styleId="Footer"><w:name w:val="footer"/><w:basedOn w:val="Normal"/><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:style>' +
+    '<w:style w:type="character" w:default="1" w:styleId="DefaultParagraphFont"><w:name w:val="Default Paragraph Font"/><w:uiPriority w:val="1"/><w:semiHidden/></w:style>' +
+    '<w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:semiHidden/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style>' +
+    '<w:style w:type="numbering" w:default="1" w:styleId="NoList"><w:name w:val="No List"/><w:semiHidden/></w:style>' +
+    "</w:styles>";
+}
+/* Enkel zip-fil (uten komprimering), som er alt en .docx trenger */
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b){ let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC_T[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function makeZip(files){
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  const d = new Date(), dt = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate(), tm = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+  files.forEach(([name, text]) => {
+    const nb = enc.encode(name), data = enc.encode(text), crc = crc32(data);
+    const h = new DataView(new ArrayBuffer(30));
+    [[0, 0x04034b50, 4], [4, 20, 2], [6, 0x0800, 2], [8, 0, 2], [10, tm, 2], [12, dt, 2], [14, crc, 4], [18, data.length, 4], [22, data.length, 4], [26, nb.length, 2], [28, 0, 2]]
+      .forEach(([o, v, s]) => s === 4 ? h.setUint32(o, v, true) : h.setUint16(o, v, true));
+    const c = new DataView(new ArrayBuffer(46));
+    [[0, 0x02014b50, 4], [4, 20, 2], [6, 20, 2], [8, 0x0800, 2], [10, 0, 2], [12, tm, 2], [14, dt, 2], [16, crc, 4], [20, data.length, 4], [24, data.length, 4],
+     [28, nb.length, 2], [30, 0, 2], [32, 0, 2], [34, 0, 2], [36, 0, 2], [38, 0, 4], [42, off, 4]]
+      .forEach(([o, v, s]) => s === 4 ? c.setUint32(o, v, true) : c.setUint16(o, v, true));
+    parts.push(new Uint8Array(h.buffer), nb, data); central.push(new Uint8Array(c.buffer), nb);
+    off += 30 + nb.length + data.length;
+  });
+  const cdSize = central.reduce((s, p) => s + p.length, 0);
+  const e = new DataView(new ArrayBuffer(22));
+  [[0, 0x06054b50, 4], [4, 0, 2], [6, 0, 2], [8, files.length, 2], [10, files.length, 2], [12, cdSize, 4], [16, off, 4], [20, 0, 2]]
+    .forEach(([o, v, s]) => s === 4 ? e.setUint32(o, v, true) : e.setUint16(o, v, true));
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)], {type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+}
+function buildDocx(title){
+  const {body, nums} = wDocx();
+  const W = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+  const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const doc = X + "<w:document " + W + "><w:body>" + body +
+    '<w:sectPr><w:footerReference w:type="default" r:id="rIdFooter"/><w:pgSz w:w="11906" w:h="16838"/>' +
+    '<w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>';
+  const footer = X + "<w:ftr " + W + '><w:p><w:pPr><w:pStyle w:val="Footer"/><w:jc w:val="right"/></w:pPr>' +
+    '<w:r><w:rPr><w:color w:val="555555"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:rPr><w:color w:val="555555"/><w:sz w:val="18"/></w:rPr><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>' +
+    '<w:r><w:rPr><w:color w:val="555555"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:rPr><w:color w:val="555555"/><w:sz w:val="18"/></w:rPr><w:t>1</w:t></w:r>' +
+    '<w:r><w:rPr><w:color w:val="555555"/><w:sz w:val="18"/></w:rPr><w:fldChar w:fldCharType="end"/></w:r></w:p></w:ftr>';
+  const now = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  return makeZip([
+    ["[Content_Types].xml", X + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>' +
+      '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>' +
+      '<Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>' +
+      '<Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>' +
+      '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>' +
+      '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>'],
+    ["_rels/.rels", X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>' +
+      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>'],
+    ["docProps/core.xml", X + '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
+      "<dc:title>" + wx(title) + "</dc:title><dc:creator>Mine dokumenter</dc:creator><dc:language>nb-NO</dc:language>" +
+      '<dcterms:created xsi:type="dcterms:W3CDTF">' + now + '</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">' + now + "</dcterms:modified></cp:coreProperties>"],
+    ["word/_rels/document.xml.rels", X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
+      '<Relationship Id="rIdNum" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' +
+      '<Relationship Id="rIdSettings" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>' +
+      '<Relationship Id="rIdFooter" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>'],
+    ["word/document.xml", doc],
+    ["word/styles.xml", wStyles()],
+    ["word/numbering.xml", wNumbering(nums)],
+    ["word/settings.xml", X + '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:defaultTabStop w:val="708"/><w:characterSpacingControl w:val="doNotCompress"/>' +
+      '<w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>'],
+    ["word/footer1.xml", footer]
+  ]);
+}
+$("docxBtn").addEventListener("click", async () => {
+  if (!currentId || !downloads) return;
+  const btn = $("docxBtn"); if (btn.dataset.busy) return;
+  btn.dataset.busy = "1"; btn.disabled = true;
+  $("tablePanel").hidden = true;
+  setStatus("Lager Word-fil …");
+  try {
+    const title = titleIn.value.trim() || "Uten tittel";
+    const blob = buildDocx(title);
+    const name = title.replace(/[\\/:*?"<>|]+/g, "-").slice(0, 120) + ".docx";
+    setStatus("Bekreft lagringen i vinduet som åpnes.");
+    await downloads.save({filename:name, data:blob});
+    setStatus("Word-filen er lagret");
+  } catch (e) {
+    setStatus(e && e.code === "declined" ? "Lagringen ble avbrutt" : "Fikk ikke laget Word-filen. Be Claude lage den i chatten.", true);
+    console.error(e);
+  } finally {
+    delete btn.dataset.busy; btn.disabled = !currentId || !downloads;
+    queueLayout();
+  }
+});
+
+/* ---------- Zoom: arket skaleres på skjermen. Sideinndeling og PDF påvirkes ikke. ---------- */
+const ZOOMS = [50, 67, 75, 90, 100, 110, 125, 150, 175, 200];
+const zwrap = $("zoomwrap");
+let zoom = 1;
+try { const v = +localStorage.getItem("md-zoom"); if (ZOOMS.includes(v)) zoom = v / 100; } catch(e){}
+const narrowScreen = () => matchMedia("(max-width:760px)").matches;
+function curZoom(){ return narrowScreen() ? 1 : zoom; }
+function fitZoom(){
+  const z = curZoom();
+  $("zoomCtl").hidden = sheet.hidden;
+  sheet.style.transform = z === 1 ? "" : "scale(" + z + ")";
+  if (narrowScreen() || sheet.hidden) { zwrap.style.width = ""; zwrap.style.height = ""; return; }
+  zwrap.style.width = sheet.offsetWidth * z + "px";
+  zwrap.style.height = sheet.offsetHeight * z + "px";
+}
+function setZoom(pct){
+  pct = Math.max(ZOOMS[0], Math.min(ZOOMS[ZOOMS.length - 1], pct));
+  zoom = pct / 100; $("zSel").value = pct;
+  try { localStorage.setItem("md-zoom", pct); } catch(e){}
+  $("zOut").disabled = pct <= ZOOMS[0]; $("zIn").disabled = pct >= ZOOMS[ZOOMS.length - 1];
+  fitZoom();
+}
+$("zSel").innerHTML = ZOOMS.map(z => '<option value="' + z + '">' + z + " %</option>").join("");
+$("zIn").addEventListener("click", () => { const c = Math.round(zoom * 100); setZoom(ZOOMS.find(z => z > c) ?? ZOOMS[ZOOMS.length - 1]); });
+$("zOut").addEventListener("click", () => { const c = Math.round(zoom * 100); setZoom([...ZOOMS].reverse().find(z => z < c) ?? ZOOMS[0]); });
+$("zSel").addEventListener("change", e => setZoom(+e.target.value));
+$("zIn").addEventListener("mousedown", e => e.preventDefault());
+$("zOut").addEventListener("mousedown", e => e.preventDefault());
+if (window.ResizeObserver) new ResizeObserver(fitZoom).observe(sheet);
+window.addEventListener("resize", fitZoom);
+setZoom(Math.round(zoom * 100));
+
+
+/* ---------- Skjul og vis sidepanelene ---------- */
+const appEl = document.querySelector(".app");
+function setPanels(tools, side){
+  appEl.classList.toggle("no-tools", !tools);
+  appEl.classList.toggle("no-side", !side);
+  try { localStorage.setItem("md-panels", JSON.stringify({tools, side})); } catch(e){}
+  if (typeof fitZoom === "function") fitZoom();
+  queueLayout();
+}
+let panelState = {tools:true, side:true};
+try { const v = JSON.parse(localStorage.getItem("md-panels") || "null"); if (v) panelState = {tools: v.tools !== false, side: v.side !== false}; } catch(e){}
+$("hideTools").addEventListener("click", () => { panelState.tools = false; setPanels(panelState.tools, panelState.side); });
+$("showTools").addEventListener("click", () => { panelState.tools = true; setPanels(panelState.tools, panelState.side); });
+$("hideSide").addEventListener("click", () => { panelState.side = false; setPanels(panelState.tools, panelState.side); });
+$("showSide").addEventListener("click", () => { panelState.side = true; setPanels(panelState.tools, panelState.side); });
+setPanels(panelState.tools, panelState.side);
+/* ---------- Oppstart ---------- */
+renderSide(); renderFolderSel(); showEmpty();
+placeholder.innerHTML = "<h2>Laster dokumentene …</h2>";
+(async () => {
+  const cl = window.claude;
+  if (!cl || !cl.use) { local = true; db = null; noStore(); return; }
+  [db, downloads] = await Promise.all([cl.use("db").catch(() => null), cl.use("downloads").catch(() => null)]);
+  if (!downloads) { $("pdfBtn").title = "PDF-nedlasting er ikke tilgjengelig her. Be Claude lage PDF-en."; $("docxBtn").title = "Word-nedlasting er ikke tilgjengelig her. Be Claude lage Word-filen."; }
+  if (!db) { local = true; noStore(); return; }
+  try { const s = await db.doc("meta/settings").get(); if (s.exists && Array.isArray(s.data().folders) && s.data().folders.length) folders = s.data().folders; } catch(e){}
+  renderFolderSel();
+  let first = true;
+  db.collection("docs").onSnapshot(snap => {
+    snap.docs.forEach(ds => {
+      const v = ds.data(); if (!v) return;
+      const mine = docs[ds.id];
+      if (ds.id === currentId && (dirty || document.activeElement === editor)) return;
+      docs[ds.id] = {title:v.title, folder:v.folder, html:v.html, created:v.created, updated:v.updated};
+      if (!folders.includes(v.folder)) { folders.push(v.folder); renderFolderSel(); }
+      if (ds.id === currentId && mine && mine.updated !== v.updated) { editor.innerHTML = sanitize(v.html); titleIn.value = v.title; resetHistory(); queueLayout(); }
+    });
+    const ids = new Set(snap.docs.map(d => d.id));
+    Object.keys(docs).forEach(id => { if (!ids.has(id) && id !== currentId) delete docs[id]; });
+    renderSide();
+    if (first) {
+      first = false;
+      let last = null; try { last = localStorage.getItem("md-last"); } catch(e){}
+      if (last && docs[last]) openDoc(last); else showEmpty();
+    }
+  }, err => { setStatus("Mistet kontakten med lagringen", true); });
+})();
+function noStore(){
+  placeholder.innerHTML = "<h2>Lagring er ikke tilgjengelig her</h2><p>Åpne Mine dokumenter i Claude mens du er logget inn for å lagre. Du kan skrive her, men teksten forsvinner når siden lukkes.</p>";
+  $("newDoc").textContent = "+ Nytt dokument (lagres ikke)";
+}
+})();
+</script>
+
+</body></html>

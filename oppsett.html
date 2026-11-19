@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oppsett av brukere</title>
+<style>
+:root{--bg:#e9ecef;--panel:#fff;--fg:#1d2329;--muted:#5b6570;--line:#d3d9df;--accent:#2f5d7c;--danger:#a33a2c;--ok:#2e6b45}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 "Segoe UI",system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:26px;margin:0 0 8px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+h2{font-size:18px;margin:0 0 10px}
+p{margin:0 0 10px;color:var(--muted)}
+label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);margin:0 0 10px}
+input,textarea{font:inherit;font-size:16px;padding:9px 11px;border:1px solid var(--line);border-radius:6px;color:var(--fg);background:#fff;width:100%;box-sizing:border-box}
+textarea{font-family:ui-monospace,Consolas,monospace;font-size:13px;min-height:160px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+button{font:inherit;font-weight:600;padding:10px 16px;border:0;border-radius:6px;background:var(--accent);color:#fff;cursor:pointer}
+.msg{margin:10px 0 0;min-height:1.5em}
+.msg.err{color:var(--danger)} .msg.ok{color:var(--ok)}
+</style>
+</head>
+<body>
+<main>
+<h1>Oppsett av brukere</h1>
+<p>Her lages innloggingen til Mine dokumenter. Alt skjer i denne nettleseren. Passordene og GitHub-nøkkelen sendes ikke noe sted.</p>
+
+<form id="f">
+<section>
+  <h2>1. GitHub-nøkkel</h2>
+  <p>Nøkkelen som gir programmet tilgang til dokumentarkivet. Den låses med passordene under.</p>
+  <label>GitHub-nøkkel<input type="password" id="tok" autocomplete="off" placeholder="github_pat_…"></label>
+</section>
+<section id="users"></section>
+<section>
+  <button type="submit">Lag innlogging</button>
+  <p class="msg" id="msg"></p>
+  <label id="outWrap" hidden>Kopier alt i feltet og send det til Claude
+    <textarea id="out" readonly></textarea></label>
+</section>
+</form>
+</main>
+<script src="config.js"></script>
+<script>
+const C = window.MD_CONFIG || {};
+const USERS = (C.users || []).map(u => ({key: u.key, name: u.name}));
+const $ = id => document.getElementById(id);
+$("users").innerHTML = "<h2>2. Passord</h2><p>Minst 10 tegn. Hver bruker logger inn med navnet sitt og passordet.</p>" +
+  USERS.map(u => '<div class="row"><label>Passord for ' + u.name + '<input type="password" data-pw="' + u.key + '" autocomplete="new-password"></label>' +
+    '<label>Gjenta passordet<input type="password" data-pw2="' + u.key + '" autocomplete="new-password"></label></div>').join("");
+const b64 = a => btoa(String.fromCharCode(...new Uint8Array(a)));
+async function lock(token, password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), iter = 600000;
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name: "PBKDF2", salt, iterations: iter, hash: "SHA-256"}, base, {name: "AES-GCM", length: 256}, false, ["encrypt"]);
+  const data = await crypto.subtle.encrypt({name: "AES-GCM", iv}, key, new TextEncoder().encode(token));
+  return {salt: b64(salt), iv: b64(iv), iter, data: b64(data)};
+}
+$("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("msg"); msg.className = "msg"; $("outWrap").hidden = true;
+  const say = (t, cls) => { msg.textContent = t; msg.className = "msg " + (cls || ""); };
+  const token = $("tok").value.trim();
+  if (!token) return say("Lim inn GitHub-nøkkelen.", "err");
+  for (const u of USERS) {
+    const a = document.querySelector('[data-pw="' + u.key + '"]').value, b = document.querySelector('[data-pw2="' + u.key + '"]').value;
+    if (a.length < 10) return say("Passordet for " + u.name + " må ha minst 10 tegn.", "err");
+    if (a !== b) return say("De to passordene for " + u.name + " er ikke like.", "err");
+  }
+  say("Sjekker nøkkelen …");
+  const h = {Authorization: "Bearer " + token, Accept: "application/vnd.github+json"};
+  const r = await fetch("https://api.github.com/repos/" + C.owner + "/" + C.repo, {headers: h, cache: "no-store"}).catch(() => null);
+  if (!r || !r.ok) return say("Nøkkelen gir ikke tilgang til " + C.owner + "/" + C.repo + ". Sjekk at arkivet er valgt da nøkkelen ble laget.", "err");
+  const repo = await r.json();
+  if (!repo.permissions || !repo.permissions.push) return say("Nøkkelen kan lese, men ikke skrive. Sett «Contents» til «Read and write».", "err");
+  say("Låser nøkkelen med passordene …");
+  const out = [];
+  for (const u of USERS) out.push(Object.assign({key: u.key, name: u.name}, await lock(token, document.querySelector('[data-pw="' + u.key + '"]').value)));
+  $("out").value = JSON.stringify(out, null, 1);
+  $("outWrap").hidden = false;
+  say("Ferdig. Feltet under inneholder ikke passordene eller nøkkelen i lesbar form.", "ok");
+});
+</script>
+</body>
+</html>
