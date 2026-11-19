@@ -6,7 +6,21 @@ window.MD_CONFIG = {
   branch: "main",
   sharedFolder: "Felles",           /* dokumenter i denne mappen ser alle brukerne */
   users: [
-    {key: "maiken", name: "Maiken"},
-    {key: "olav",   name: "Olav"}
+    {
+      "key": "maiken",
+      "name": "Maiken",
+      "salt": "qDbpYopy8dHYesXWG+eMoA==",
+      "iv": "inlE40Y3fRamqSVY",
+      "iter": 600000,
+      "data": "RH3b65E3lDQfzTRx2hSfDNlmjkYN/GbE4InNJyzPRSk6//amwtUotyU3l8t7duspF1BevUgDZn3G5QDgL9k8EYhXEyAoevFfKbAXcvhdfxJMOUYna8RJAYKC4BlNkAQRFsdrM9YhFy7nEG1l/w=="
+    },
+    {
+      "key": "olav",
+      "name": "Olav",
+      "salt": "igTDagaJKF/UTQeRYekKgA==",
+      "iv": "Hg3Iy0tB+DkhG7IP",
+      "iter": 600000,
+      "data": "DVFHEF6j8IsaCRS3XuYfV8i5eApzK4eWorrdHo1A235ZgRs6sJXfhi/k8ZPXB8HmiyvatYJT8j7u5ohK/IMbKIX0fYwg34b2tg3BYiZQrlDhmG6LF9BmRNp4GrsC00HAQF5O9dzQT8AVS6SsJQ=="
+    }
   ]
 };
