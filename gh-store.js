@@ -1,15 +1,15 @@
 /* Lagring i GitHub for Mine dokumenter.
    Gir programmet det samme grensesnittet som det har i Claude (window.claude.use("db") og use("downloads")),
    men dokumentene lagres som filer i et privat GitHub-arkiv:
-     data/<bruker>/<id>.json   egne dokumenter (alle mapper unntatt Felles)
-     data/felles/<id>.json     dokumenter i mappen Felles, som alle brukerne ser
+     data/<bruker>/<id>.json   egne dokumenter (alle mapper som ikke er delt)
+     data/felles/<id>.json     dokumenter i de delte mappene (Felles og Operations), som alle brukerne ser
      settings/<bruker>.json    egne mapper
    Brukerne logger inn med navn og passord. GitHub-nøkkelen som gir tilgang til arkivet, ligger kryptert i config.js,
    én kopi per bruker, låst med brukerens passord. Bare den som kan passordet, får låst opp nøkkelen. */
 (() => {
 const C = window.MD_CONFIG || {};
 const API = "https://api.github.com";
-const SHARED = C.sharedFolder || "Felles";
+const SHARED = new Set(C.sharedFolders || [C.sharedFolder || "Felles"]);   /* mapper som alle brukerne ser */
 const SAVE_DELAY = 3000;                 /* venter 3 sekunder etter siste endring før lagring, så det ikke blir en ny versjon per tastetrykk */
 const POLL = 30000;                      /* henter endringer fra de andre brukerne hvert 30. sekund */
 let token = null, me = null;
@@ -60,7 +60,7 @@ async function removeFile(p, sha) {
 /* ---------- Dokumentene ---------- */
 const known = {};      /* id -> {dir, sha, data}: siste kjente versjon i GitHub */
 const pending = {};    /* id -> {data, waiters, timer}: endringer som venter på å bli lagret */
-const dirFor = d => d && d.folder === SHARED ? "felles" : me.key;
+const dirFor = d => d && SHARED.has(d.folder) ? "felles" : me.key;
 function flush(id) {
   const p = pending[id]; if (!p) return Promise.resolve();
   clearTimeout(p.timer); delete pending[id];

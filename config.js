@@ -4,7 +4,7 @@ window.MD_CONFIG = {
   owner: "maikenhansen",            /* eieren av dokumentarkivet */
   repo: "mine-dokumenter-data",     /* det private arkivet der dokumentene lagres */
   branch: "main",
-  sharedFolder: "Felles",           /* dokumenter i denne mappen ser alle brukerne */
+  sharedFolders: ["Felles", "Operations"],   /* dokumenter i disse mappene ser og redigerer alle brukerne */
   users: [
     {
       "key": "maiken",

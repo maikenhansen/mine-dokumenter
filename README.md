@@ -2,10 +2,10 @@
 
 Skriveprogrammet Mine dokumenter for Maiken og Olav. Programmet kjører som en nettside på GitHub Pages. Dokumentene lagres i det private arkivet `maikenhansen/mine-dokumenter-data`.
 
-- **Egne dokumenter:** alt i mappene Operations, Concessions og mapper du lager selv. Bare du ser dem i programmet.
-- **Felles dokumenter:** alt i mappen Felles. Alle brukerne ser og redigerer dem.
+- **Delte dokumenter:** alt i mappene Operations og Felles. Alle brukerne ser og redigerer dem.
+- **Egne dokumenter:** alt i Concessions og mapper du lager selv. Bare du ser dem i programmet.
 
-Et dokument flyttes mellom egne og felles ved å bytte mappe i feltet «Mappe».
+Et dokument flyttes mellom egne og delte ved å bytte mappe i feltet «Mappe».
 
 ## Innlogging
 Brukerne logger inn med navn og passord. Olav trenger ikke GitHub.
